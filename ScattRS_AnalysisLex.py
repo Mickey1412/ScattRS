@@ -38,6 +38,8 @@ p_reservadas = {
 	'r_cuad': 'R_SQUARE',
 	'graf_barra': 'GRAPH_BAR',
 	'graf_scatter': 'GRAPH_SCATTER',
+	'binomial': 'BINOMIAL',
+	'bernoulli': 'BERNOULLI',
 	'limpiar': 'ERASE',
 	'print': 'PRINT'
 }
