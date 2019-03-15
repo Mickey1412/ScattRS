@@ -1,2 +1,2 @@
 # ScattRS
-Poryecto Final de COmpiladores
+Poryecto Final de Compiladores
