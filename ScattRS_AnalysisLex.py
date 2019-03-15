@@ -12,7 +12,7 @@ Tokens = ['OP_SUMA', 'OP_RESTA', 'OP_MULT', 'OP_DIV', 'PAREN_I', 'PAREN_D', 'SEM
 p_reservadas = {
 	'programa': 'PROGRAM',
 	'funcion': 'FUNC',
-	'param': 'VAR',
+	'param': 'PARAMS',
 	'retornar': 'RETURN',
 	'int': 'INT',
 	'float': 'FLOAT',
@@ -28,7 +28,7 @@ p_reservadas = {
 	'true': 'TRUE',
 	'false': 'FALSE',
 	#funciones especiales del lenguaje
-	'pend': 'PEND'
+	'pend': 'PEND',
 	'suma': 'SUM',
 	'desv': 'DESVIA',
 	'media': 'PROM',
@@ -83,7 +83,7 @@ def t_FLOAT_VALOR(t):
     return t
 
 t_BOOL_VALOR = r'((true|TRUE)|(false|FALSE))'
-t_CHAR_VALOR - r'\‘.* \’'
+t_CHAR_VALOR = r'\‘.* \’'
 t_STRING_VALOR = r'\".*\" | \'.*\''
 
 #Token para ignorar
