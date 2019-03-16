@@ -70,7 +70,7 @@ def fact_A1(p):
 
 def stmt(p):
 	'''
-	stmt : read | assign | condition | print | return | estadistica | func_call
+	stmt : read | assign | condition | printf | return | estadistica | func_call
 	'''
 
 def tipo(p):
@@ -138,9 +138,9 @@ def exp_cond_A1(p):
 	exp_cond_A1 : OR expression | AND expression | empty
 	'''
 
-def print(p):
+def printf(p):
 	'''
-	print : PRINT PAREN_I print_A1 PAREN_D SEMICOLON
+	printf : PRINT PAREN_I print_A1 PAREN_D SEMICOLON
 	'''
 
 def print_A1(p):
@@ -153,49 +153,49 @@ def cond(p):
  	cond : IF PAREN_I exp_cond PAREN_D bloque cond_A1 SEMICOLON
  	'''
 
- def cond_A1(p):
+def cond_A1(p):
  	'''
  	cond_A1 : ELSE bloque | empty
  	'''
 
- def func_call(p):
+def func_call(p):
  	'''
  	func_call : ID PAREN_I args PAREN_D
  	'''
 
- def bloque(p):
+def bloque(p):
  	'''
  	bloque : CURLY_I bloque_A1 CURLY_D
  	'''
 
- def bloque_A1(p):
+def bloque_A1(p):
  	'''
  	bloque_A1 : var stmt bloque_A1 | var bloque_A1 | stmt bloque_A1 | empty
  	'''
 
- def estadistica(p):
+def estadistica(p):
  	'''
  	estadistica : PROM estadistica_A1 | MODA estadistica_A1 | MEDIAN estadistica_A1 | SUM estadistica_A1 | DESVIA estadistica_A2 
  				| PEND estadistica_A2 | VARIANCE estadistica_A1 | R_SQUARE estadistica_A2 | GRAPH_BAR estadistica_A2 | GRAPH_SCATTER estadistica_A4 
  				| BINOMIAL estadistica_A3 | BERNOULLI estadistica_A2
  	'''
 
- def estadistica_A1(p):
+def estadistica_A1(p):
  	'''
  	estadistica_A1 : PAREN_I ID PAREN_D SEMICOLON
  	'''
 
- def estadistica_A2(p):
+def estadistica_A2(p):
  	'''
  	estadistica_A2 : PAREN_I ID COMA ID PAREN_D SEMICOLON
  	'''
 
- def estadistica_A3(p):
+def estadistica_A3(p):
  	'''
  	estadistica_A3 : PAREN_I ID COMA ID COMA ID PAREN_D SEMICOLON
  	'''
 
- def estadistica_A4(p):
+def estadistica_A4(p):
  	'''
  	estadistica_A4 : estadistica_A2 | estadistica_A3
  	'''
