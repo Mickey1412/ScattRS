@@ -5,7 +5,7 @@
 import ply.lex as lex
 
 #Lista de Tokens del lenguaje
-Tokens = ['OP_SUMA', 'OP_RESTA', 'OP_MULT', 'OP_DIV', 'PAREN_I', 'PAREN_D', 'SEMICOLON', 'COMA', 'CURLY_I', 'CURLY_D', 'BRAKET_I', 'BRAKET_D', 'EQUAL', 'MENOR_EQ', 'MAYOR_EQ', 'MENOR', 'MAYOR', 'NOT_EQ',
+Tokens = ['OP_SUMA', 'OP_RESTA', 'OP_MULT', 'OP_DIV', 'PAREN_I', 'PAREN_D', 'SEMICOLON', 'COMA', 'CURLY_I', 'CURLY_D', 'BRACKET_I', 'BRACKET_D', 'EQUAL', 'MENOR_EQ', 'MAYOR_EQ', 'MENOR', 'MAYOR', 'NOT_EQ',
  			'ASSIGN', 'ID', 'INT_VALOR', 'FLOAT_VALOR', 'BOOL_VALOR', 'CHAR_VALOR', 'STRING_VALOR']
 
 #Palabras reservadas = 'lexema' : 'token'
@@ -18,15 +18,14 @@ p_reservadas = {
 	'float': 'FLOAT',
 	'bool': 'BOOL',
 	'char': 'CHAR',
-	'string': 'STRING',
 	'void': 'VOID',
-	'if': 'IF',
-	'else': 'ELSE',
-	'and': 'AND',
-	'or': 'OR',
-	'main': 'MAIN',
-	'true': 'TRUE',
-	'false': 'FALSE',
+	'SI': 'IF',
+	'SI_NO': 'ELSE',
+	'Y': 'AND',
+	'O': 'OR',
+	'inicio': 'MAIN',
+	'verdadero': 'TRUE',
+	'falso': 'FALSE',
 	#funciones especiales del lenguaje
 	'pend': 'PEND',
 	'suma': 'SUM',
@@ -41,7 +40,7 @@ p_reservadas = {
 	'binomial': 'BINOMIAL',
 	'bernoulli': 'BERNOULLI',
 	'limpiar': 'ERASE',
-	'print': 'PRINT'
+	'imprimir': 'PRINT'
 }
 
 #Union de los tokens de las palabras reservadas y tokens de operadores
