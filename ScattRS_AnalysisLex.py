@@ -29,7 +29,6 @@ tokens = [
 	'ID', 
 	'INT_VALOR', 
 	'FLOAT_VALOR', 
-	# 'BOOL_VALOR', 
 	'CHAR_VALOR', 
 	'STRING_VALOR',
 	'COLON'
@@ -72,7 +71,6 @@ p_reservadas = {
 
 #Union de los tokens de las palabras reservadas y tokens de operadores
 tokens = tokens + list(p_reservadas.values())
-# print(tokens)
 
 #Expresiones regulares de los tokens
 t_OP_SUMA = r'\+'
@@ -95,7 +93,6 @@ t_MENOR_EQ = r'<='
 t_MAYOR_EQ = r'>='
 t_NOT_EQ = r'!='
 t_ASSIGN = r'='
-# t_BOOL_VALOR = r'((TRUE)|(FALSE))'
 t_CHAR_VALOR = r'\'.?\''
 t_STRING_VALOR = r'\".*\"'
 #Token para ignorar
