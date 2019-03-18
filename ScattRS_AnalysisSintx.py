@@ -102,7 +102,6 @@ def p_stmt(p):
 		| printf 
 		| return 
 		| estadistica 
-
 	'''
 	print("SI SE stmt")
 
@@ -198,7 +197,6 @@ def p_exp_cond_A1(p):
 		| AND expression 
 		| empty
 	'''
-
 
 def p_printf(p):
 	'''
