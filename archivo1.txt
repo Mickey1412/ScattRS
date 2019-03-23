@@ -1,0 +1,22 @@
+programa hola 
+param int cosa; 
+funcion void prueba(){ 
+	param int iA;
+	param bool bflag;
+	bflag = verdadero;
+	imprimir("pasa por aqui");
+} 
+funcion int estad(){
+	param float fA;
+	param float fB[2];
+	fB[0] = 1;
+	fB[1] = 2;
+
+	SI(bflag == verdadero){
+        imprimir("hola");
+    }
+}
+inicio(){
+	param int iB;
+	
+}

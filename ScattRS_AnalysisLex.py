@@ -52,6 +52,7 @@ p_reservadas = {
 	'inicio': 'MAIN',
 	'verdadero': 'TRUE',
 	'falso': 'FALSE',
+	'leer' : 'READ',
 	#funciones especiales del lenguaje
 	'pend': 'PEND',
 	'suma': 'SUM',
