@@ -1,0 +1,6 @@
+programa hola 
+inicio(){
+    SI(1 < 3){
+        
+    }
+}
