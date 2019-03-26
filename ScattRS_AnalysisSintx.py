@@ -85,7 +85,7 @@ def p_assign(p):
     	# assign : ID assign_A1 ASSIGN expression SEMICOLON
 		# | ID assign_A1 ASSIGN estadistica SEMICOLON
 	'''
-	assign : ID assign_A1 ASSIGN expression SEMICOLON
+	assign : ID assign_A1 ASSIGN assign_A2 SEMICOLON
 	'''
 	print("SI SE assign")
 	print(p[1],p[2],p[3],p[5])
@@ -94,6 +94,12 @@ def p_assign_A1(p):
 	'''
 	assign_A1 : BRACKET_I exp BRACKET_D 
 		| empty 
+	'''
+def p_assign_A2(p):
+    '''
+	assign_A2 : expression
+		| estadistica
+		| func_call
 	'''
 
 def p_args(p):
@@ -147,6 +153,7 @@ def p_var_cte(p):
 		| TRUE
 		| FALSE 
 	'''
+	print("exp: " + str(p[1]))
 	print("SI SE var_cte")
 
 def p_var_cte_A1(p):
@@ -216,7 +223,7 @@ def p_exp_cond(p):
     	
     # exp_cond : expression exp_cond_A1
 	''' 
-	exp_cond : exp exp_cond_A1
+	exp_cond : expression exp_cond_A1
 	'''
 	print("Si se exp_cond")
 
@@ -330,7 +337,7 @@ def p_empty(p):
 parser = yacc.yacc()
 
 # nombre del archivo a compilar
-name = 'archivo4.txt'
+name = 'archivo2.txt'
 
 with open(name, 'r') as myfile:
 	s = myfile.read().replace('\n', '')
