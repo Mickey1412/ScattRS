@@ -1,0 +1,16 @@
+programa hola 
+param int cosa; 
+funcion void prueba(int p1, float p2){ 
+	param int iA;
+	param bool bflag;
+	bflag = verdadero;
+	param int iprueba[3];
+    iprueba[0] = 1; iprueba[1] = 1;
+    param int iprueba2[3] = {1, 2, 3},iprueba2[3] = {1, 2, 3},iprueba2[3] = {1, 2, 3}, iprueba2[3] , asdf;
+    SI(hola == verdadero){
+
+	}
+} 
+inicio(){
+	param int iB;
+}
