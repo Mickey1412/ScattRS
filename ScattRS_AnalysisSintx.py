@@ -1,5 +1,9 @@
 import ply.yacc as yacc
 from ScattRS_AnalysisLex import tokens
+from ScattRS_Programa import Programa
+
+#variable que toma la clase programa para llamar los procedimientos del directorio de funciones y cuadruplos
+var_program = Programa()
 
 # Gramaticas del compilador
 def p_programa(p):
@@ -20,6 +24,14 @@ def p_progra_A2(p):
 	progra_A2 : funcion progra_A2 
 		| empty
 	'''
+#punto neuralgico que crea el directorio de funciones
+def p_punto_creardf(p):
+	'''p_punto_creardf : '''
+	var_program.scope_global = p[-2]
+	var_program.scope_actual = p[-2]
+
+	#agrega la funcion al directorio 
+	var_program.directorio_func.agregar_func(var_program.scope_global, 'void')
 
 def p_funcion(p):
 	'''
@@ -245,6 +257,25 @@ def p_print_A1(p):
 	print_A1 : expression 
 		| STRING_VALOR
 	'''
+
+def p_cond(p):
+	'''
+	cond : IF PAREN_I exp_cond PAREN_D bloque cond_A1
+	'''
+	print("Si se pudo cond")
+
+def p_printf(p):
+	'''
+	printf : PRINT PAREN_I print_A1 PAREN_D SEMICOLON
+	'''
+	print("Si se pudo print")
+
+def p_print_A1(p):
+	'''
+	print_A1 : expression 
+		| STRING_VALOR
+	'''
+	print("Si se pudo func_call")
 
 def p_cond(p):
 	'''
