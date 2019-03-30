@@ -1,8 +1,11 @@
 programa hola 
-funcion void prueba(){ 
-    
-    
-} 
+param int iA, iB;
+funcion void prueba(int prueba){
+
+}
 inicio(){
-    imoda = moda(iprueba2);
+    mientras(1 < 3){
+        imprimir("se ciclo este rollo");
+    }
+
 }

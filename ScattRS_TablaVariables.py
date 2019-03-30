@@ -7,7 +7,7 @@ class Tabla_Variables(object):
 	
 	#Constructor de la Clase
 	def __init__(self):
-		self.List_Variables = {}
+		self.list_Variables = {}
 
 	#Metodo para agregar variables a la lista
 	def agregar_v(self, nombre_v, tipo_v, direccion_memoria_v = 0):
@@ -32,5 +32,5 @@ class Tabla_Variables(object):
 		else:
 			return None
 
-	def_str__(self):
+	def _str__(self):
 		return self.List_Variables

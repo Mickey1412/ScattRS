@@ -119,10 +119,10 @@ def t_error(t):
     t.lexer.skip(1)
 
 #Correr el analizador lexico
-ScattRS_AnalysisLex = lex.lex()
-ScattRS_AnalysisLex.input("\"Hola\"")
+scattRS_AnalysisLex = lex.lex()
+scattRS_AnalysisLex.input("\"Hola\"")
 while True:
-    token = ScattRS_AnalysisLex.token()
+    token = scattRS_AnalysisLex.token()
     if not token:
         break
     print(token)

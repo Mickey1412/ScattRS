@@ -1,6 +1,6 @@
 import ply.yacc as yacc
-from ScattRS_AnalysisLex import tokens
-from ScattRS_Programa import Programa
+from scattRS_AnalysisLex import tokens
+from scattRS_Programa import Programa
 
 #variable que toma la clase programa para llamar los procedimientos del directorio de funciones y cuadruplos
 var_program = Programa()
@@ -8,9 +8,9 @@ var_program = Programa()
 # Gramaticas del compilador
 def p_programa(p):
 	'''
-	programa : PROGRAM ID progra_A1 progra_A2 MAIN PAREN_I PAREN_D bloque
+	programa : PROGRAM ID punto_creardf progra_A1 progra_A2 MAIN PAREN_I PAREN_D bloque
 	'''
-	print("SI SE PUDO")
+	print("\nSI SE PUDO")
 
 def p_progra_A1(p):
 	'''
@@ -23,21 +23,13 @@ def p_progra_A2(p):
 	progra_A2 : funcion progra_A2 
 		| empty
 	'''
-#punto neuralgico que crea el directorio de funciones
-def p_punto_creardf(p):
-	'''p_punto_creardf : '''
-	var_program.scope_global = p[-2]
-	var_program.scope_actual = p[-2]
-
-	#agrega la funcion al directorio 
-	var_program.directorio_func.agregar_func(var_program.scope_global, 'void')
 
 def p_funcion(p):
 	'''
 	funcion : FUNC func_tipo ID PAREN_I func_param PAREN_D bloque
 	'''
-	print("SI SE PUDO funcion")
-	print(p[3])
+	# print("SI SE PUDO funcion")
+	# print(p[3])
 
 def p_func_tipo(p):
 	'''
@@ -56,13 +48,18 @@ def p_param(p):
 	'''
 	param : tipo ID
 	'''
-	print("SI SE param")
+	# print("SI SE param")
 
 def p_var(p):
 	'''
-	var : PARAMS tipo var_A1 SEMICOLON 
+	var : PARAMS tipo var_A1 NP_var SEMICOLON 
 	'''
-	print("SI SE var")
+	# print("SI SE var")
+
+def p_NP_var(p):
+	'''NP_var : '''
+	tipo_variable = p[-2]
+	print("tipo de variable: " + str(tipo_variable))
 
 def p_var_A1(p):
 	'''
@@ -71,7 +68,9 @@ def p_var_A1(p):
 		| ID 
 		| ID COMA var_A1
 	'''
-
+	print("variable nombre: " + str(p[1]))
+	var_program.variables_temporales.append(p[1])
+	
 # def p_var_A1(p):
 # 	'''
 # 	var_A1 : ID arr var_array
@@ -96,21 +95,15 @@ def p_assign(p):
 	'''
 	assign : ID assign_A1 ASSIGN assign_A2 SEMICOLON
 	'''
-	print("SI SE assign")
-	print(p[1],p[2],p[3],p[5])
+	# print("SI SE assign")
+	# print(p[1],p[2],p[3],p[5])
 
 def p_assign_A1(p):
 	'''
 	assign_A1 : BRACKET_I exp BRACKET_D 
 		| empty 
 	'''
-def p_assign_A2(p):
-    '''
-	assign_A2 : expression
-		| estadistica
-		| func_call
-	'''
-
+	
 def p_assign_A2(p):
     '''
 	assign_A2 : expression
@@ -123,14 +116,14 @@ def p_args(p):
 		| expression COMA args 
 		| empty
 	'''
-	print("SI SE args")
+	# print("SI SE args")
 
 def p_factor(p):
 	'''
 	factor : PAREN_I expression PAREN_D 
 		| fact_A1 var_cte
 	'''
-	print("SI SE factor")
+	# print("SI SE factor")
 
 def p_fact_A1(p):
 	'''
@@ -150,7 +143,7 @@ def p_stmt(p):
 		| readf
 		| while
 	'''
-	print("SI SE stmt")
+	# print("SI SE stmt")
 
 def p_tipo(p):
 	'''
@@ -159,7 +152,7 @@ def p_tipo(p):
 		| BOOL 
 		| CHAR 
 	'''
-	print("SI SE tipo")
+	# print("SI SE tipo")
 
 def p_var_cte(p):
 	'''
@@ -169,8 +162,8 @@ def p_var_cte(p):
 		| TRUE
 		| FALSE 
 	'''
-	print("exp: " + str(p[1]))
-	print("SI SE var_cte")
+	# print("exp: " + str(p[1]))
+	# print("SI SE var_cte")
 
 def p_var_cte_A1(p):
 	'''
@@ -190,7 +183,7 @@ def p_exp(p):
 	'''
 	exp : term exp_A1
 	'''
-	print("SI SE exp")
+	# print("SI SE exp")
 
 def p_exp_A1(p):
 	'''
@@ -203,13 +196,13 @@ def p_arr(p):
 	'''
 	arr : BRACKET_I INT_VALOR BRACKET_D
 	'''
-	print("SI SE arr")
+	# print("SI SE arr")
 
 def p_term(p):
 	'''
 	term : factor term_A1
 	'''
-	print("SI SE term")
+	# print("SI SE term")
 
 def p_term_A1(p):
 	'''
@@ -223,7 +216,7 @@ def p_expression(p):
 	expression : exp expression_A1 exp
 		| exp
 	'''
-	print("SI SE expression")
+	# print("SI SE expression")
 
 def p_expression_A1(p):
 	'''
@@ -239,7 +232,7 @@ def p_exp_cond(p):
 	''' 
 	exp_cond : expression exp_cond_A1
 	'''
-	print("Si se exp_cond")
+	# print("Si se exp_cond")
 
 def p_exp_cond_A1(p):
 	'''
@@ -252,7 +245,7 @@ def p_printf(p):
 	'''
 	printf : PRINT PAREN_I print_A1 PAREN_D SEMICOLON
 	'''
-	print("Si se pudo print")
+	# print("Si se pudo print")
 
 def p_print_A1(p):
 	'''
@@ -264,26 +257,7 @@ def p_cond(p):
 	'''
 	cond : IF PAREN_I exp_cond PAREN_D bloque cond_A1
 	'''
-	print("Si se pudo cond")
-
-def p_printf(p):
-	'''
-	printf : PRINT PAREN_I print_A1 PAREN_D SEMICOLON
-	'''
-	print("Si se pudo print")
-
-def p_print_A1(p):
-	'''
-	print_A1 : expression 
-		| STRING_VALOR
-	'''
-	print("Si se pudo func_call")
-
-def p_cond(p):
-	'''
-	cond : IF PAREN_I exp_cond PAREN_D bloque cond_A1
-	'''
-	print("Si se pudo cond")
+	# print("Si se pudo cond")
 
 def p_cond_A1(p):
 	'''
@@ -295,13 +269,13 @@ def p_func_call(p):
 	'''
 	func_call : ID PAREN_I args PAREN_D
 	'''
-	print("Si se pudo func_call")
+	# print("Si se pudo func_call")
 
 def p_bloque(p):
 	'''
 	bloque : CURLY_I bloque_A1 CURLY_D
 	'''
-	print("Si se pudo bloque")
+	# print("Si se pudo bloque")
 
 def p_bloque_A1(p):
 	'''
@@ -324,8 +298,8 @@ def p_estadistica(p):
 		| BINOMIAL estadistica_A3 
 		| BERNOULLI estadistica_A2
 	'''
-	print("Si se pudo estadistica")
-	print(p[1])
+	# print("Si se pudo estadistica")
+	# print(p[1])
 
 def p_estadisitica_graph(p):
     '''
@@ -337,7 +311,7 @@ def p_estadistica_A1(p):
 	'''
 	estadistica_A1 : PAREN_I ID PAREN_D 
 	'''
-	print(p[1],p[2],p[3],p[4])
+	# print(p[1],p[2],p[3],p[4])
 
 def p_estadistica_A2(p):
 	'''
@@ -359,13 +333,13 @@ def p_return(p):
 	'''
 	return : RETURN exp SEMICOLON
 	'''
-	print("Si se pudo return")
+	# print("Si se pudo return")
 
 def p_readf(p):
 	'''
 	readf : READ PAREN_I expression PAREN_D SEMICOLON
 	'''
-	print("Si se pudo read")
+	# print("Si se pudo read")
 
 def p_while(p):
     '''
@@ -376,6 +350,20 @@ def p_empty(p):
 	'empty :'
 	pass
 
+## PUNTOS NEURALGICOS ##
+# P.N. que crea el directorio de funciones
+def p_punto_creardf(p):
+	'''punto_creardf : '''
+	var_program.scope_global = p[-2]
+	var_program.scope_actual = p[-2]
+	
+	#agrega la funcion al directorio 
+	var_program.directorio_func.agregar_func(var_program.scope_global, 'void')
+	# Imprimir contenido de funcion
+	print("Contenido de: " + str(p[-2]))
+	# var_program.directorio_func.print_directorio()
+
+## ARCHIVO A COMPILAR ##
 parser = yacc.yacc()
 
 # nombre del archivo a compilar
