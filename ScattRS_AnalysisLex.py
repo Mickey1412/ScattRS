@@ -67,7 +67,8 @@ p_reservadas = {
 	'binomial': 'BINOMIAL',
 	'bernoulli': 'BERNOULLI',
 	'limpiar': 'ERASE',
-	'imprimir': 'PRINT'
+	'imprimir': 'PRINT',
+	'mientras': 'WHILE'
 }
 
 #Union de los tokens de las palabras reservadas y tokens de operadores
@@ -95,7 +96,8 @@ t_MAYOR_EQ = r'>='
 t_NOT_EQ = r'!='
 t_ASSIGN = r'='
 t_CHAR_VALOR = r'\'.?\''
-t_STRING_VALOR = r'\".*\"'
+# t_STRING_VALOR = r'\".*\"'
+t_STRING_VALOR = r'\"[a-zA-Z_ 0-9]+\"'
 #Token para ignorar
 t_ignore = ' \t'
 

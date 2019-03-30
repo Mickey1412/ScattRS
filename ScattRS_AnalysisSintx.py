@@ -11,7 +11,6 @@ def p_programa(p):
 	programa : PROGRAM ID progra_A1 progra_A2 MAIN PAREN_I PAREN_D bloque
 	'''
 	print("SI SE PUDO")
-	# print(p[1], p[2],p[3],p[4],p[5],p[6],p[7],p[8])
 
 def p_progra_A1(p):
 	'''
@@ -65,37 +64,35 @@ def p_var(p):
 	'''
 	print("SI SE var")
 
-# def p_var_A1(p):
-# 	'''
-# 	var_A1 : ID arr 
-# 		| ID arr COMA var_A1 
-# 		| ID 
-# 		| ID COMA var_A1
-# 	'''
-
 def p_var_A1(p):
 	'''
-	var_A1 : ID arr var_array
-		| ID arr var_array COMA var_A1 
+	var_A1 : ID arr 
+		| ID arr COMA var_A1 
 		| ID 
 		| ID COMA var_A1
 	'''
 
-def p_var_array(p):
-    '''
-	var_array : ASSIGN CURLY_I var_array_A1 CURLY_D
-		| empty
-	'''
+# def p_var_A1(p):
+# 	'''
+# 	var_A1 : ID arr var_array
+# 		| ID arr var_array COMA var_A1 
+# 		| ID 
+# 		| ID COMA var_A1
+# 	'''
 
-def p_var_array_A1(p):
-    '''
-	var_array_A1 : expression
-		| expression COMA var_array_A1
-	'''
+# def p_var_array(p):
+#     '''
+# 	var_array : ASSIGN CURLY_I var_array_A1 CURLY_D
+# 		| empty
+# 	'''
+
+# def p_var_array_A1(p):
+#     '''
+# 	var_array_A1 : expression
+# 		| expression COMA var_array_A1
+# '''
 
 def p_assign(p):
-    	# assign : ID assign_A1 ASSIGN expression SEMICOLON
-		# | ID assign_A1 ASSIGN estadistica SEMICOLON
 	'''
 	assign : ID assign_A1 ASSIGN assign_A2 SEMICOLON
 	'''
@@ -112,6 +109,12 @@ def p_assign_A2(p):
 	assign_A2 : expression
 		| estadistica
 		| func_call
+	'''
+
+def p_assign_A2(p):
+    '''
+	assign_A2 : expression
+		| estadistica
 	'''
 
 def p_args(p):
@@ -143,8 +146,9 @@ def p_stmt(p):
 		| cond 
 		| printf 
 		| return 
-		| estadistica 
+		| estadistica_graph 
 		| readf
+		| while
 	'''
 	print("SI SE stmt")
 
@@ -232,8 +236,6 @@ def p_expression_A1(p):
 	'''
 
 def p_exp_cond(p):
-    	
-    # exp_cond : expression exp_cond_A1
 	''' 
 	exp_cond : expression exp_cond_A1
 	'''
@@ -319,28 +321,32 @@ def p_estadistica(p):
 		| PEND estadistica_A2 
 		| VARIANCE estadistica_A1 
 		| R_SQUARE estadistica_A2 
-		| GRAPH_BAR estadistica_A2 
-		| GRAPH_SCATTER estadistica_A4 
 		| BINOMIAL estadistica_A3 
 		| BERNOULLI estadistica_A2
 	'''
 	print("Si se pudo estadistica")
 	print(p[1])
 
+def p_estadisitica_graph(p):
+    '''
+	estadistica_graph : GRAPH_BAR estadistica_A2 SEMICOLON
+		| GRAPH_SCATTER estadistica_A4 SEMICOLON
+	'''
+
 def p_estadistica_A1(p):
 	'''
-	estadistica_A1 : PAREN_I ID PAREN_D SEMICOLON
+	estadistica_A1 : PAREN_I ID PAREN_D 
 	'''
 	print(p[1],p[2],p[3],p[4])
 
 def p_estadistica_A2(p):
 	'''
-	estadistica_A2 : PAREN_I ID COMA ID PAREN_D SEMICOLON
+	estadistica_A2 : PAREN_I ID COMA ID PAREN_D 
 	'''
 
 def p_estadistica_A3(p):
 	'''
-	estadistica_A3 : PAREN_I ID COMA ID COMA ID PAREN_D SEMICOLON
+	estadistica_A3 : PAREN_I ID COMA ID COMA ID PAREN_D 
 	'''
 
 def p_estadistica_A4(p):
@@ -360,6 +366,11 @@ def p_readf(p):
 	readf : READ PAREN_I expression PAREN_D SEMICOLON
 	'''
 	print("Si se pudo read")
+
+def p_while(p):
+    '''
+	while : WHILE PAREN_I exp_cond PAREN_D bloque
+	'''
 
 def p_empty(p):
 	'empty :'
