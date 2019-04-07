@@ -8,25 +8,27 @@ var_program = Programa()
 # Gramaticas del compilador
 def p_programa(p):
 	'''
-	programa : PROGRAM ID punto_creardf progra_A1 progra_A2 MAIN PAREN_I PAREN_D bloque
+	programa : PROGRAM ID punto_creardf progra_A1 progra_A2 MAIN PAREN_I PAREN_D punto_main bloque
 	'''
-	print("\nSI SE PUDO")
+	print("Sintaxis Correcto :D \n")
 
 def p_progra_A1(p):
 	'''
 	progra_A1 : var progra_A1 
 		| empty
 	'''
+	p[0] = p[1]
 
 def p_progra_A2(p):
 	'''
 	progra_A2 : funcion progra_A2 
 		| empty
 	'''
+	p[0] = p[1]
 
 def p_funcion(p):
 	'''
-	funcion : FUNC func_tipo ID PAREN_I func_param PAREN_D bloque
+	funcion : FUNC func_tipo ID PAREN_I func_param PAREN_D punto_addf bloque
 	'''
 	# print("SI SE PUDO funcion")
 	# print(p[3])
@@ -36,6 +38,7 @@ def p_func_tipo(p):
 	func_tipo : VOID 
 		| tipo
 	'''
+	p[0] = p[1]
 
 def p_func_param(p):
 	'''
@@ -43,23 +46,24 @@ def p_func_param(p):
 		| param COMA func_param 
 		| empty
 	'''
-	
+ 
 def p_param(p):
 	'''
 	param : tipo ID
 	'''
 	# print("SI SE param")
+#  Agarra los nombres y tipos de los parametros y los inserta en el arreglo de parametros temporales
+	nombre_parametro = p[2]
+	tipo_parametro = p[1]
+	# print(nombre_parametro, tipo_parametro)
+	var_program.parametros_temporales_nombres.insert(0,nombre_parametro)
+	var_program.parametros_temporales_tipos.insert(0,tipo_parametro)
 
 def p_var(p):
 	'''
-	var : PARAMS tipo var_A1 NP_var SEMICOLON 
+	var : PARAMS tipo var_A1 punto_addv SEMICOLON 
 	'''
 	# print("SI SE var")
-
-def p_NP_var(p):
-	'''NP_var : '''
-	tipo_variable = p[-2]
-	print("tipo de variable: " + str(tipo_variable))
 
 def p_var_A1(p):
 	'''
@@ -68,8 +72,7 @@ def p_var_A1(p):
 		| ID 
 		| ID COMA var_A1
 	'''
-	print("variable nombre: " + str(p[1]))
-	var_program.variables_temporales.append(p[1])
+	p[0] = p[1]
 	
 # def p_var_A1(p):
 # 	'''
@@ -95,8 +98,6 @@ def p_assign(p):
 	'''
 	assign : ID assign_A1 ASSIGN assign_A2 SEMICOLON
 	'''
-	# print("SI SE assign")
-	# print(p[1],p[2],p[3],p[5])
 
 def p_assign_A1(p):
 	'''
@@ -152,6 +153,7 @@ def p_tipo(p):
 		| BOOL 
 		| CHAR 
 	'''
+	p[0] = p[1]
 	# print("SI SE tipo")
 
 def p_var_cte(p):
@@ -351,7 +353,7 @@ def p_empty(p):
 	pass
 
 ## PUNTOS NEURALGICOS ##
-# P.N. que crea el directorio de funciones
+# P.N. que agrega funcion principal (el programa)
 def p_punto_creardf(p):
 	'''punto_creardf : '''
 	var_program.scope_global = p[-2]
@@ -359,9 +361,50 @@ def p_punto_creardf(p):
 	
 	#agrega la funcion al directorio 
 	var_program.directorio_func.agregar_func(var_program.scope_global, 'void')
-	# Imprimir contenido de funcion
-	print("Contenido de: " + str(p[-2]))
-	# var_program.directorio_func.print_directorio()
+	# agregar las variables globales como los parametros en agregar funcion N.P.
+	
+
+# P.N. que agrega una funcion al directorio de funciones
+def p_punto_addf(p):
+	'''punto_addf : '''
+	var_program.scope_actual = p[-4]
+	tipofuncion = p[-5]
+	
+ 	#Agrega la funcion al directorio 
+	var_program.directorio_func.agregar_func(var_program.scope_actual, tipofuncion)
+	
+ 	# Agregar las variables en la tabla de variables
+	variables = zip(var_program.parametros_temporales_nombres, var_program.parametros_temporales_tipos)
+	for variable_nombre, variable_tipo in variables: 
+		var_program.directorio_func.agregar_variable(var_program.scope_actual, variable_tipo, variable_nombre)
+	
+	del var_program.parametros_temporales_nombres[:]
+	del var_program.parametros_temporales_tipos[:]
+ 	# falta agregar la memoria 
+	# var_program.directorio_func.agregar_parametro(var_program.scope_actual, list(var_program.variables_temporales_tipos), lista de direcciones)
+
+#P.N. que agrega la funcion MAIN al directorio de funciones
+def p_punto_main(p):
+	'''punto_main : '''
+	var_program.scope_actual = p[-3]
+
+	#agrega la funcion al directorio 
+	var_program.directorio_func.agregar_func(var_program.scope_global, 'void')
+
+#P.N. que agrega varable a la tabla de variables de la funcion actual
+def p_punto_addv(p):
+    '''punto_addv : '''
+    variable_tipo = p[-2]
+    variable_nombre = p[-1]
+    func_nombre = var_program.scope_actual
+    variable_direccion = '0'
+    
+    print("tipo de variable: " + str(variable_tipo) + " nombre de variable: " + str(variable_nombre) + " nombre de funcion: " + str(func_nombre))
+    var_program.directorio_func.agregar_variable(func_nombre, variable_tipo, variable_nombre, variable_direccion)
+
+
+
+
 
 ## ARCHIVO A COMPILAR ##
 parser = yacc.yacc()
@@ -374,6 +417,15 @@ with open(name, 'r') as myfile:
 print("Nombre del archivo de prueba: " + name + "\n")
 parser.parse(s)
 
+# Imprimir programa
+var_program.directorio_func.print_directorio()
+# Imprimir los parametros de las funciones (comentar el borrado de la lista de parametros para que despliegue algo)
+# var_program.print_temporales_parametros_nombres()
+# var_program.print_temporales_parametros_tipos()
+
+
+# var_program.print_programa()
+# print ("Numero de variables: ", var_program.get_variable_tempo())
 # while True:
 #     try:
 #         s = input('')
