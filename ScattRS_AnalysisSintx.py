@@ -1,6 +1,7 @@
 import ply.yacc as yacc
 from scattRS_AnalysisLex import tokens
 from scattRS_Programa import Programa
+from ScattRS_Cuadruplos import Cuadruplos
 
 #variable que toma la clase programa para llamar los procedimientos del directorio de funciones y cuadruplos
 var_program = Programa()
@@ -339,7 +340,7 @@ def p_return(p):
 
 def p_readf(p):
 	'''
-	readf : READ PAREN_I expression PAREN_D SEMICOLON
+	readf : READ PAREN_I expression PAREN_D punto_cuadRead SEMICOLON
 	'''
 	# print("Si se pudo read")
 
@@ -402,9 +403,49 @@ def p_punto_addv(p):
     print("tipo de variable: " + str(variable_tipo) + " nombre de variable: " + str(variable_nombre) + " nombre de funcion: " + str(func_nombre))
     var_program.directorio_func.agregar_variable(func_nombre, variable_tipo, variable_nombre, variable_direccion)
 
+#P.N. que crea un cuadruplo de lectura (read)
+def p_punto_cuadRead(p):
+	'''punto_cuadRead : '''
+	mensaje_dir = var_program.pila_operando.pop()
+	var_program.pila_tipo.pop()
 
+	#Se obtiene el tipo de variable del que consistira el input de lectura y pide un espacio temporal de memoria para resolverlo
+	variable_tipo = var_program.pila_tipo[-1]
+	#agregar a memoria
 
+	var_program.pila_tipo.append(variable_tipo)
 
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'READ', variable_tipo, mensaje_dir)
+	var_program.lista_cuadruplos.append(cuadrup)
+	var_program.numero_cuadruplo += 1
+
+#P.N. que resuleve una asignacion (con el cubo semantico) y crea su cuadruplo
+def p_punto_cuadAssign(p):
+	'''punto_cuadAssign : '''
+	#obtener operador
+	operador = var_program.pila_operador.pop()
+
+	if operador == '=':
+		#obtener operador con su tipo
+		operando_der = var_program.pila_operador.pop()
+		tipo_der = var_program.pila_tipo.pop()
+		operando_izq = var_program.pila_operador.pop()
+		tipo_izq = var_program.pila_tipo.pop()
+
+		#obtener el tipo del resultado de los operandos
+		tipo_resultado = var_program.CuboSemantico.get_tipo_semantica(tipo_izq, tipo_der, operador)
+
+		#Si no es type_mismatch
+		if tipo_resultado != 'error':
+			#crear cuadruplo
+			cuadrup = Cuadruplos(var_program.numero_cuadruplo, operador, operando_der, operando_izq)
+
+			#se agrega el cuadruplo a la lista de cuadruplos y se incrementa el contador
+			var_program.lista_cuadruplos.append(cuadrup)
+			var_program.numero_cuadruplo += 1
+		else:
+			#print('Mismatch de operandos en: {0}'.format(p.lexer.lineno))
+			#sys.exit()
 
 ## ARCHIVO A COMPILAR ##
 parser = yacc.yacc()
