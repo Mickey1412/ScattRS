@@ -100,11 +100,13 @@ class DireccionFunc():
         funcion = self.get_f(func_nombre)
         if funcion is not None:
             if funcion['variables'].busqueda_v(variable_nombre):
+                print("La variable " + variable_nombre + " ya fue declarada")
                 return True
             else:
                 return False
         else:
-            print("La variable " + variable_nombre + " ya fue declarada")
+            #print("La variable " + variable_nombre + " ya fue declarada")
+            print("La funcion donde se esta agregando la variable temporal no existe")
 
     #agrega una variable temporal a la funcion
     def agregar_temporal(self, func_nombre, temporal_tipo):
