@@ -1,7 +1,7 @@
 import ply.yacc as yacc
 from scattRS_AnalysisLex import tokens
 from scattRS_Programa import Programa
-from ScattRS_Cuadruplos import Cuadruplos
+from scattRS_Cuadruplos import Cuadruplos
 
 #variable que toma la clase programa para llamar los procedimientos del directorio de funciones y cuadruplos
 var_program = Programa()
@@ -415,8 +415,8 @@ def p_punto_cuadRead(p):
 
 	var_program.pila_tipo.append(variable_tipo)
 
-	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'READ', variable_tipo, mensaje_dir)
-	var_program.lista_cuadruplos.append(cuadrup)
+	# cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'READ', variable_tipo, mensaje_dir)
+	# var_program.lista_cuadruplo.append(cuadrup)
 	var_program.numero_cuadruplo += 1
 
 #P.N. que resuleve una asignacion (con el cubo semantico) y crea su cuadruplo
@@ -433,18 +433,19 @@ def p_punto_cuadAssign(p):
 		tipo_izq = var_program.pila_tipo.pop()
 
 		#obtener el tipo del resultado de los operandos
-		tipo_resultado = var_program.CuboSemantico.get_tipo_semantica(tipo_izq, tipo_der, operador)
+		tipo_resultado = var_program.cubo_semantico.get_tipo_semantica(tipo_izq, tipo_der, operador)
 
 		#Si no es type_mismatch
 		if tipo_resultado != 'error':
 			#crear cuadruplo
-			cuadrup = Cuadruplos(var_program.numero_cuadruplo, operador, operando_der, operando_izq)
+			# cuadrup = Cuadruplos(var_program.numero_cuadruplo, operador, operando_der, operando_izq)
 
 			#se agrega el cuadruplo a la lista de cuadruplos y se incrementa el contador
-			var_program.lista_cuadruplos.append(cuadrup)
+			var_program.lista_cuadruplo.append(cuadrup)
 			var_program.numero_cuadruplo += 1
 		else:
-			#print('Mismatch de operandos en: {0}'.format(p.lexer.lineno))
+			# print('Mismatch de operandos en: {0}'.format(p.lexer.lineno))
+   			print('Mismatch de operandos en: {0}'.format(p.lexer.lineno))
 			#sys.exit()
 
 ## ARCHIVO A COMPILAR ##

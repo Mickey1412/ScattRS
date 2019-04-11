@@ -20,6 +20,7 @@ class Programa():
 		self.pila_saltos = []
 		self.lista_cuadruplo = []
 		self.numero_cuadruplo = 1
+		self.cubo_semantico = CuboSemantico()
 
 	# def print_programa(self):
     # 		for i in range (len(self.variables_temporales)):
