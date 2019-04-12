@@ -1,11 +1,11 @@
 programa hola 
-param int iA, iB;
-funcion void prueba(int prueba){
 
-}
 inicio(){
-    mientras(1 < 3){
-        imprimir("se ciclo este rollo");
-    }
+    var int iA, iB;
+    var float fC, fD, fE;
+    var int r;
+    var float fU;
 
+    r = iA / iB;
+    fU = fE * fC + fD;
 }

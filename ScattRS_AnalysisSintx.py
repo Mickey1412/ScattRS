@@ -84,6 +84,7 @@ def p_var_A1(p):
 	#nombre = p[1]
 	#var_program.variables_temporales.insert(0,nombre)
 
+### VERSION PASADA DE LA GRAMATICA (11/04/19)
 #def p_var(p):
 	#'''
 	#var : PARAMS tipo var_A1 SEMICOLON 
@@ -129,7 +130,7 @@ def p_var_A1(p):
 
 def p_assign(p):
 	'''
-	assign : ID assign_A1 ASSIGN assign_A2 SEMICOLON
+	assign : ID assign_A1 ASSIGN punto_pOper assign_A2 SEMICOLON
 	'''
 
 def p_assign_A1(p):
@@ -161,8 +162,8 @@ def p_factor(p):
 
 def p_fact_A1(p):
 	'''
-	fact_A1 : OP_SUMA 
-		| OP_RESTA 
+	fact_A1 : OP_SUMA punto_pOper
+		| OP_RESTA punto_pOper
 		| empty
 	'''
 
@@ -191,11 +192,11 @@ def p_tipo(p):
 
 def p_var_cte(p):
 	'''
-	var_cte : ID var_cte_A1 
-		| INT_VALOR 
-		| FLOAT_VALOR
-		| TRUE
-		| FALSE 
+	var_cte : ID punto_pilaOvar var_cte_A1 
+		| INT_VALOR punto_pilaOint 
+		| FLOAT_VALOR punto_pilaOfloat
+		| TRUE punto_pilaObool
+		| FALSE punto_pilaObool
 	'''
 	# print("exp: " + str(p[1]))
 	# print("SI SE var_cte")
@@ -216,14 +217,14 @@ def p_var_cte_A2(p):
 
 def p_exp(p):
 	'''
-	exp : term exp_A1
+	exp : term punto_termino exp_A1
 	'''
 	# print("SI SE exp")
 
 def p_exp_A1(p):
 	'''
-	exp_A1 : OP_SUMA 
-		| OP_RESTA 
+	exp_A1 : OP_SUMA punto_pOper
+		| OP_RESTA punto_pOper
 		| empty
 	'''
 
@@ -235,32 +236,32 @@ def p_arr(p):
 
 def p_term(p):
 	'''
-	term : factor term_A1
+	term : factor punto_factor term_A1
 	'''
 	# print("SI SE term")
 
 def p_term_A1(p):
 	'''
-	term_A1 : OP_MULT 
-		| OP_DIV 
+	term_A1 : OP_MULT punto_pOper
+		| OP_DIV punto_pOper
 		| empty
 	'''
 
 def p_expression(p):
 	'''
-	expression : exp expression_A1 exp
+	expression : exp expression_A1 exp punto_relacion
 		| exp
 	'''
 	# print("SI SE expression")
 
 def p_expression_A1(p):
 	'''
-	expression_A1 : MAYOR  
-		| MENOR 
-		| MAYOR_EQ  
-		| MENOR_EQ 
-		| EQUAL 
-		| NOT_EQ 
+	expression_A1 : MAYOR punto_pOper
+		| MENOR punto_pOper
+		| MAYOR_EQ punto_pOper
+		| MENOR_EQ punto_pOper
+		| EQUAL punto_pOper
+		| NOT_EQ punto_pOper
 	'''
 
 def p_exp_cond(p):
@@ -271,8 +272,8 @@ def p_exp_cond(p):
 
 def p_exp_cond_A1(p):
 	'''
-	exp_cond_A1 : OR expression 
-		| AND expression 
+	exp_cond_A1 : OR punto_pOper expression punto_logico
+		| AND punto_pOper expression punto_logico
 		| empty
 	'''
 
@@ -471,12 +472,126 @@ def p_punto_addvarr(p):
 
 		var_program.directorio_func.agregar_variable_dimensionada(var_program.scope_actual, variable)
 
+
 # P.N. que identifica el tamaño de los arreglos cuando se declaren
 # def p_punto_declaracion_varr(p):
 #     '''punto_declaracion_var'''
 #     tamano = p[-2]
 #     nombre = p[-4]
     
+
+##########################  P.N. PARA GENERACION DE CUADRUPLOS ###############################
+
+#P.N. que inserta un operador a la pila de operadores 
+def p_punto_pOper(p):
+	'''punto_pOper : ''' 
+	var_program.pila_operador.append(p[-1])
+	
+#FUNCION que resuelve operaciones de las pilas de operando y operadores, creando su cuadruplo
+def cuadOperaciones(p):
+	resultado_cuad = 'temp'
+	#se sacan los operandos de las pilas para el cuadruplo
+	operando_der = var_program.pila_operando.pop()
+	tipo_der = var_program.pila_tipo.pop()
+	operando_izq = var_program.pila_operando.pop()
+	tipo_izq = var_program.pila_tipo.pop()
+
+	#sacar el operador de la operacion
+	operador = var_program.pila_operador.pop()
+
+	#verificar que el tipo del resultado de la operacion sea valido de acuerdo al punto semantico
+	tipo_resultado = var_program.cubo_semantico.get_tipo_semantica(tipo_izq, tipo_der, operador)
+	if tipo_resultado != 'error':
+		#obtener una direccion temporal de memoria
+		#####
+
+		#Crear cuadruplo
+		cuadrup = Cuadruplos(var_program.numero_cuadruplo, operador, operando_izq, operando_der, resultado_cuad)
+
+		#Se agrega el cuadruplo a la lista de cuadruplos y el resultado a la pila de operandos y pila de tipos
+		var_program.lista_cuadruplo.append(cuadrup)
+		var_program.numero_cuadruplo += 1
+		var_program.pila_operando.append(resultado_cuad)
+		var_program.pila_tipo.append(tipo_resultado)
+	else:
+		#Si la operacion es entre 2 tipos de variables invalidas
+		print('Mismatch de tipos de operandos')
+		#sys.exit()
+
+#P.N. que llama la funcion cuadOperaciones para resolver operaciones de "factor"
+def p_punto_factor(p):
+	'''punto_factor : '''
+	if len(var_program.pila_operador) > 0 and len(var_program.pila_operando) > 1:
+		if var_program.pila_operador[-1] == '*' or var_program.pila_operador[-1] == '/':
+			cuadOperaciones(p)
+
+#P.N. que llama la funcion cuadOperaciones para resolver operaciones de "term"
+def p_punto_termino(p):
+	'''punto_termino : '''
+	if len(var_program.pila_operador) > 0 and len(var_program.pila_operando) > 1:
+		if var_program.pila_operador[-1] == '+' or var_program.pila_operador[-1] == '-':
+			cuadOperaciones(p)
+
+#P.N. que llama la funcion cuadOperaciones para resolver operaciones relacionales de comparacion
+def p_punto_relacion(p):
+	'''punto_relacion : '''
+	if len(var_program.pila_operador) > 0 and len(var_program.pila_operando) > 1:
+		if var_program.pila_operador[-1] == '>' or var_program.pila_operador[-1] == '<' or var_program.pila_operador[-1] == '<=' or var_program.pila_operador[-1] == '>=' or var_program.pila_operador[-1] == '==' or var_program.pila_operador[-1] == '!=' :
+				cuadOperaciones(p)
+
+#P.N. que llama la funcion cuadOperaciones para resolver operaciones de logica
+def p_punto_logico(p):
+	'''punto_logico : '''
+	if len(var_program.pila_operador) > 0 and len(var_program.pila_operando) > 1:
+		if var_program.pila_operador[-1] == 'AND' or var_program.pila_operador[-1] == 'OR':
+			cuadOperaciones(p)
+
+#P.N. que inserta una variable a la pila de operandos
+def p_punto_pilaOvar(p):
+	'''punto_pilaOvar : '''
+	variable = var_program.directorio_func.get_funcion_variable(var_program.scope_actual, p[-1])
+
+	if variable is None:
+		#Verifica si la varaible existe en el scope global
+		variable = var_program.directorio_func.get_funcion_variable(var_program.scope_global, p[-1])
+		if variable is None:
+			print("La variable: " + p[-1] + " no esta declarada")
+			#sys.exit()
+		else:
+			#Se agrega variable global a la pila de operandos
+			var_program.pila_operando.append(variable['nombre'])
+			var_program.pila_tipo.append(variable['tipo'])
+	else:
+		#Se agrega variable local a la pila de operandos
+			var_program.pila_operando.append(variable['nombre'])
+			var_program.pila_tipo.append(variable['tipo'])
+
+#P.N. que inserta una constante entera a la pila de operandos
+def p_punto_pilaOint(p):
+	'''punto_pilaOint : '''
+	#busqueda o asignacion de direccion de memoria 
+	#########
+
+	var_program.pila_operando.append(int(p[-1]))
+	var_program.pila_tipo.append('int')
+
+#P.N. que inserta una constante flotante a la pila de operandos
+def p_punto_pilaOfloat(p):
+	'''punto_pilaOfloat : '''
+	#busqueda o asignacion de direccion de memoria 
+	#########
+
+	var_program.pila_operando.append(float(p[-1]))
+	var_program.pila_tipo.append('float')
+
+#P.N. que inserta una constante booleana a la pila de operandos
+def p_punto_pilaObool(p):
+	'''punto_pilaObool : '''
+	#busqueda o asignacion de direccion de memoria 
+	#########
+
+	var_program.pila_operando.append(bool(p[-1]))
+	var_program.pila_tipo.append('bool')
 
 #P.N. que crea un cuadruplo de lectura (read)
 def p_punto_cuadRead(p):

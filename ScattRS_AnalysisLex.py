@@ -38,7 +38,7 @@ tokens = [
 p_reservadas = {
 	'programa': 'PROGRAM',
 	'funcion': 'FUNC',
-	'param': 'PARAMS',
+	'var': 'PARAMS',
 	'retornar': 'RETURN',
 	'int': 'INT',
 	'float': 'FLOAT',
@@ -60,7 +60,7 @@ p_reservadas = {
 	'media': 'PROM',
 	'moda': 'MODA',
 	'mediana': 'MEDIAN',
-	'var': 'VARIANCE',
+	'varianza': 'VARIANCE',
 	'r_cuad': 'R_SQUARE',
 	'graf_barra': 'GRAPH_BAR',
 	'graf_scatter': 'GRAPH_SCATTER',
