@@ -62,18 +62,50 @@ def p_param(p):
 
 def p_var(p):
 	'''
-	var : PARAMS tipo var_A1 punto_addv SEMICOLON 
+	var : PARAMS tipo ID var_A1 punto_addv SEMICOLON 
+	| PARAMS tipo ID arr SEMICOLON
 	'''
 	# print("SI SE var")
 
 def p_var_A1(p):
 	'''
-	var_A1 : ID arr 
-		| ID arr COMA var_A1 
-		| ID 
-		| ID COMA var_A1
+	var_A1 : COMA ID var_A1
+		| empty 
 	'''
-	p[0] = p[1]
+	#print("p[-1]", p[-1])
+	nombre = p[-1]
+	#print("p[-2]", p[-2])
+	var_program.variables_temporales.insert(0,nombre)
+	if p[-2] != ',':
+		#print("p[-2]",p[-2])
+		tipo = p[-2]
+		var_program.variables_temporales_tipo = tipo
+	#print("p[0]",p[1])
+	#nombre = p[1]
+	#var_program.variables_temporales.insert(0,nombre)
+
+#def p_var(p):
+	#'''
+	#var : PARAMS tipo var_A1 SEMICOLON 
+	#'''
+	# print("SI SE var")
+
+#def p_var_A1(p):
+	#'''
+	#var_A1 : ID arr 
+		#| ID arr COMA var_A1 
+		#| ID punto_addv
+		#| ID punto_addv COMA var_A1
+	#'''
+	#var_program.variables_temporales.insert(0,)
+	#if p[-1] != ',':
+		#print("p[-1]",p[-1])
+		#tipo = p[-1]
+		#var_program.variables_temporales_tipo = tipo
+	#print("p[0]",p[1])
+	#nombre = p[1]
+	#var_program.variables_temporales.insert(0,nombre)
+	
 	
 # def p_var_A1(p):
 # 	'''
@@ -394,14 +426,50 @@ def p_punto_main(p):
 
 #P.N. que agrega varable a la tabla de variables de la funcion actual
 def p_punto_addv(p):
-    '''punto_addv : '''
-    variable_tipo = p[-2]
-    variable_nombre = p[-1]
-    func_nombre = var_program.scope_actual
-    variable_direccion = '0'
-    
-    print("tipo de variable: " + str(variable_tipo) + " nombre de variable: " + str(variable_nombre) + " nombre de funcion: " + str(func_nombre))
-    var_program.directorio_func.agregar_variable(func_nombre, variable_tipo, variable_nombre, variable_direccion)
+	'''punto_addv : '''
+	#variable_tipo = p[-2]
+	#variable_nombre = p[-1]
+	variable_direccion = '0'
+	#print("pasa por aqui")
+	#print("variables temporales nombre: ",var_program.variables_temporales)
+	#print("variable tipo: ",var_program.variables_temporales_tipo)
+	func_nombre = var_program.scope_actual
+	for variable in var_program.variables_temporales:
+		variable_declarada = var_program.directorio_func.verificar_variable_existe(var_program.scope_actual, variable)
+		#print(variable_declarada)
+		#print(variable)
+		if not variable_declarada:
+			#pedir direccion de memoria dependiendo del scope
+
+			print("tipo de variable: " + str(var_program.variables_temporales_tipo) + " nombre de variables: " + str(variable) + " nombre de funcion: " + str(func_nombre))
+			var_program.directorio_func.agregar_variable(var_program.scope_actual, var_program.variables_temporales_tipo, variable, variable_direccion)
+	
+	del var_program.variables_temporales[:]
+	var_program.variables_temporales_tipo = ""
+	#print("tipo de variable: " + str(variable_tipo) + " nombre de variables: " + str(variable_nombre) + " nombre de funcion: " + str(func_nombre))
+	#var_program.directorio_func.agregar_variable(func_nombre, variable_tipo, variable_nombre, variable_direccion)
+
+	#print("tipo de variable: " + str(variable_tipo) + " nombre de variable: " + str(variable_nombre) + " nombre de funcion: " + str(func_nombre))
+	#var_program.directorio_func.agregar_variable(func_nombre, variable_tipo, variable_nombre, variable_direccion)
+
+
+
+#P.N. que agrega una variable dimensionada (arreglo) a la tabla de variables de la funcion actual
+def p_punto_addvarr(p):
+	'''punto_addvarr : '''
+	variable_tipo = p[-2]
+	variable = var_program.arreglo_actual
+	variable_direccion = '0'
+	variable_declarada = var_program.directorio_func.verificar_variable_existe(var_program.scope_actual, variable['nombre'])
+
+	if not variable_declarada:
+		#pedir direccion de memoria dependiendo de scope
+
+		variable['tipo'] = variable_tipo
+		variable['direccion_memoria'] = variable_direccion
+
+		var_program.directorio_func.agregar_variable_dimensionada(var_program.scope_actual, variable)
+
 
 #P.N. que crea un cuadruplo de lectura (read)
 def p_punto_cuadRead(p):
@@ -441,7 +509,7 @@ def p_punto_cuadAssign(p):
 			# cuadrup = Cuadruplos(var_program.numero_cuadruplo, operador, operando_der, operando_izq)
 
 			#se agrega el cuadruplo a la lista de cuadruplos y se incrementa el contador
-			var_program.lista_cuadruplo.append(cuadrup)
+			#var_program.lista_cuadruplo.append(cuadrup)
 			var_program.numero_cuadruplo += 1
 		else:
 			# print('Mismatch de operandos en: {0}'.format(p.lexer.lineno))

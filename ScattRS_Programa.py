@@ -12,6 +12,7 @@ class Programa():
 		self.scope_actual = scope_actual
 		self.directorio_func = DireccionFunc()
 		self.variables_temporales = []
+		self.variables_temporales_tipo = ""
 		self.parametros_temporales_nombres = []
 		self.parametros_temporales_tipos = []
 		self.pila_operando = []
@@ -21,6 +22,7 @@ class Programa():
 		self.lista_cuadruplo = []
 		self.numero_cuadruplo = 1
 		self.cubo_semantico = CuboSemantico()
+		self.arreglo_actual = {}
 
 	# def print_programa(self):
     # 		for i in range (len(self.variables_temporales)):
