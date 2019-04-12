@@ -420,9 +420,10 @@ def p_punto_addf(p):
 def p_punto_main(p):
 	'''punto_main : '''
 	var_program.scope_actual = p[-3]
+	# print(var_program.scope_actual)
 
 	#agrega la funcion al directorio 
-	var_program.directorio_func.agregar_func(var_program.scope_global, 'void')
+	var_program.directorio_func.agregar_func(var_program.scope_actual, 'void')
 
 #P.N. que agrega varable a la tabla de variables de la funcion actual
 def p_punto_addv(p):
@@ -433,7 +434,7 @@ def p_punto_addv(p):
 	#print("pasa por aqui")
 	#print("variables temporales nombre: ",var_program.variables_temporales)
 	#print("variable tipo: ",var_program.variables_temporales_tipo)
-	func_nombre = var_program.scope_actual
+	#func_nombre = var_program.scope_actual
 	for variable in var_program.variables_temporales:
 		variable_declarada = var_program.directorio_func.verificar_variable_existe(var_program.scope_actual, variable)
 		#print(variable_declarada)
@@ -441,7 +442,7 @@ def p_punto_addv(p):
 		if not variable_declarada:
 			#pedir direccion de memoria dependiendo del scope
 
-			print("tipo de variable: " + str(var_program.variables_temporales_tipo) + " nombre de variables: " + str(variable) + " nombre de funcion: " + str(func_nombre))
+			# print("tipo de variable: " + str(var_program.variables_temporales_tipo) + " nombre de variables: " + str(variable) + " nombre de funcion: " + str(func_nombre))
 			var_program.directorio_func.agregar_variable(var_program.scope_actual, var_program.variables_temporales_tipo, variable, variable_direccion)
 	
 	del var_program.variables_temporales[:]
@@ -457,7 +458,7 @@ def p_punto_addv(p):
 #P.N. que agrega una variable dimensionada (arreglo) a la tabla de variables de la funcion actual
 def p_punto_addvarr(p):
 	'''punto_addvarr : '''
-	variable_tipo = p[-2]
+	variable_tipo = p[-3]
 	variable = var_program.arreglo_actual
 	variable_direccion = '0'
 	variable_declarada = var_program.directorio_func.verificar_variable_existe(var_program.scope_actual, variable['nombre'])
@@ -470,6 +471,12 @@ def p_punto_addvarr(p):
 
 		var_program.directorio_func.agregar_variable_dimensionada(var_program.scope_actual, variable)
 
+# P.N. que identifica el tamaño de los arreglos cuando se declaren
+# def p_punto_declaracion_varr(p):
+#     '''punto_declaracion_var'''
+#     tamano = p[-2]
+#     nombre = p[-4]
+    
 
 #P.N. que crea un cuadruplo de lectura (read)
 def p_punto_cuadRead(p):
@@ -510,7 +517,7 @@ def p_punto_cuadAssign(p):
 
 			#se agrega el cuadruplo a la lista de cuadruplos y se incrementa el contador
 			#var_program.lista_cuadruplo.append(cuadrup)
-			var_program.numero_cuadruplo += 1
+   			var_program.numero_cuadruplo += 1
 		else:
 			# print('Mismatch de operandos en: {0}'.format(p.lexer.lineno))
    			print('Mismatch de operandos en: {0}'.format(p.lexer.lineno))
