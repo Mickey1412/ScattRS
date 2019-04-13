@@ -198,6 +198,7 @@ def p_var_cte(p):
 		| FLOAT_VALOR punto_pilaOfloat
 		| TRUE punto_pilaObool
 		| FALSE punto_pilaObool
+		| CHAR_VALOR punto_pilaOchar
 	'''
 	# print("exp: " + str(p[1]))
 	# print("SI SE var_cte")
@@ -281,14 +282,14 @@ def p_exp_cond_A1(p):
 
 def p_printf(p):
 	'''
-	printf : PRINT PAREN_I print_A1 PAREN_D SEMICOLON
+	printf : PRINT PAREN_I print_A1 PAREN_D punto_print SEMICOLON
 	'''
 	# print("Si se pudo print")
 
 def p_print_A1(p):
 	'''
 	print_A1 : expression 
-		| STRING_VALOR
+		| STRING_VALOR punto_pilaOString
 	'''
 
 def p_cond(p):
@@ -375,7 +376,7 @@ def p_return(p):
 
 def p_readf(p):
 	'''
-	readf : READ PAREN_I expression PAREN_D SEMICOLON 
+	readf : READ PAREN_I expression PAREN_D punto_cuadRead SEMICOLON 
 	'''
 	# print("Si se pudo read")
 
@@ -594,6 +595,17 @@ def p_punto_pilaObool(p):
 
 	var_program.pila_operando.append(bool(p[-1]))
 	var_program.pila_tipo.append('bool')
+ 
+def p_punto_pilaOString(p):
+    ''' punto_pilaOString : '''
+    var_program.pila_operando.append(str(p[-1]))
+    var_program.pila_tipo.append('string')  
+
+def p_punto_pilaOchar(p):
+    ''' punto_pilaOchar : '''
+    print("pasa por aqui")
+    var_program.pila_operando.append(p[-1])
+    var_program.pila_tipo.append('char')
 
 #P.N. que crea y agrega un fondo falso a la pila de operadores
 def p_punto_fondoIni(p):
@@ -609,10 +621,13 @@ def p_punto_fondoFin(p):
 def p_punto_cuadRead(p):
 	'''punto_cuadRead : '''
 	mensaje_dir = var_program.pila_operando.pop()
-	var_program.pila_tipo.pop()
+	variable_tipo = var_program.pila_tipo.pop()
+ 
+	print("mensaje_dir: ", mensaje_dir)
+	print("variable_tipo: ", variable_tipo)
 
 	#Se obtiene el tipo de variable del que consistira el input de lectura y pide un espacio temporal de memoria para resolverlo
-	variable_tipo = var_program.pila_tipo[-1]
+	# variable_tipo = var_program.pila_tipo[-1]
 	#agregar a memoria
 
 	var_program.pila_tipo.append(variable_tipo)
@@ -631,14 +646,16 @@ def p_punto_cuadAssign(p):
 		#obtener operando con su tipo
 		print("lista 1 : ", var_program.pila_operando)
 		operando_der = var_program.pila_operando.pop()
+		print("derecho: ",operando_der)
 		tipo_der = var_program.pila_tipo.pop()
 		print("lista 2 : ", var_program.pila_operando)
 		operando_izq = var_program.pila_operando.pop()
+		print("izquierdo: ",operando_izq)
 		tipo_izq = var_program.pila_tipo.pop()
 
 		#obtener el tipo del resultado de los operandos
 		tipo_resultado = var_program.cubo_semantico.get_tipo_semantica(tipo_izq, tipo_der, operador)
-
+		print("tipo_resultado: ", tipo_resultado)
 		#Si no es type_mismatch
 		if tipo_resultado != 'error':
 			#crear cuadruplo
@@ -723,12 +740,14 @@ def p_punto_regreserWhile(p):
 
 #P.N. que crea el cuadruplo de PRINT
 def p_punto_print(p):
+	''' punto_print : '''
 	#sacar direccion de memoria de lo que se va a imprimir de la pila de operandos
 	operando = var_program.pila_operando.pop()
 	#crear cadruplo PRINT
 	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'PRINT', operando, None, None)
 	var_program.lista_cuadruplo.append(cuadrup)
 	var_program.numero_cuadruplo += 1
+ 
 
 ## ARCHIVO A COMPILAR ##
 parser = yacc.yacc()
