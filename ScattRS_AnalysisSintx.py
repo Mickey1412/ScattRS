@@ -130,7 +130,7 @@ def p_var_A1(p):
 
 def p_assign(p):
 	'''
-	assign : ID assign_A1 ASSIGN punto_pOper assign_A2 SEMICOLON
+	assign : ID punto_pilaOvar assign_A1 ASSIGN punto_pOper assign_A2 SEMICOLON punto_cuadAssign
 	'''
 
 def p_assign_A1(p):
@@ -155,7 +155,7 @@ def p_args(p):
 
 def p_factor(p):
 	'''
-	factor : PAREN_I expression PAREN_D 
+	factor : PAREN_I punto_fondoIni expression PAREN_D punto_fondoFin
 		| fact_A1 var_cte
 	'''
 	# print("SI SE factor")
@@ -217,14 +217,14 @@ def p_var_cte_A2(p):
 
 def p_exp(p):
 	'''
-	exp : term punto_termino exp_A1
+	exp : term punto_termino exp_A1 
 	'''
 	# print("SI SE exp")
 
 def p_exp_A1(p):
 	'''
-	exp_A1 : OP_SUMA punto_pOper
-		| OP_RESTA punto_pOper
+	exp_A1 : OP_SUMA punto_pOper exp
+		| OP_RESTA punto_pOper exp
 		| empty
 	'''
 
@@ -236,14 +236,14 @@ def p_arr(p):
 
 def p_term(p):
 	'''
-	term : factor punto_factor term_A1
+	term : factor punto_factor term_A1 
 	'''
 	# print("SI SE term")
 
 def p_term_A1(p):
 	'''
-	term_A1 : OP_MULT punto_pOper
-		| OP_DIV punto_pOper
+	term_A1 : OP_MULT punto_pOper term
+		| OP_DIV punto_pOper term
 		| empty
 	'''
 
@@ -262,6 +262,7 @@ def p_expression_A1(p):
 		| MENOR_EQ punto_pOper
 		| EQUAL punto_pOper
 		| NOT_EQ punto_pOper
+		| empty
 	'''
 
 def p_exp_cond(p):
@@ -373,7 +374,7 @@ def p_return(p):
 
 def p_readf(p):
 	'''
-	readf : READ PAREN_I expression PAREN_D punto_cuadRead SEMICOLON
+	readf : READ PAREN_I expression PAREN_D SEMICOLON 
 	'''
 	# print("Si se pudo read")
 
@@ -593,6 +594,16 @@ def p_punto_pilaObool(p):
 	var_program.pila_operando.append(bool(p[-1]))
 	var_program.pila_tipo.append('bool')
 
+#P.N. que crea y agrega un fondo falso a la pila de operadores
+def p_punto_fondoIni(p):
+    '''punto_fondoIni : '''
+    var_program.pila_operador.append('()')
+    
+#P.N. que se deshace del fondo falso
+def p_punto_fondoFin(p):
+    '''punto_fondoFin : '''
+    var_program.pila_operador.pop()
+
 #P.N. que crea un cuadruplo de lectura (read)
 def p_punto_cuadRead(p):
 	'''punto_cuadRead : '''
@@ -605,8 +616,8 @@ def p_punto_cuadRead(p):
 
 	var_program.pila_tipo.append(variable_tipo)
 
-	# cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'READ', variable_tipo, mensaje_dir)
-	# var_program.lista_cuadruplo.append(cuadrup)
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'READ', variable_tipo, None ,mensaje_dir)
+	var_program.lista_cuadruplo.append(cuadrup)
 	var_program.numero_cuadruplo += 1
 
 #P.N. que resuleve una asignacion (con el cubo semantico) y crea su cuadruplo
@@ -616,10 +627,12 @@ def p_punto_cuadAssign(p):
 	operador = var_program.pila_operador.pop()
 
 	if operador == '=':
-		#obtener operador con su tipo
-		operando_der = var_program.pila_operador.pop()
+		#obtener operando con su tipo
+		print("lista 1 : ", var_program.pila_operando)
+		operando_der = var_program.pila_operando.pop()
 		tipo_der = var_program.pila_tipo.pop()
-		operando_izq = var_program.pila_operador.pop()
+		print("lista 2 : ", var_program.pila_operando)
+		operando_izq = var_program.pila_operando.pop()
 		tipo_izq = var_program.pila_tipo.pop()
 
 		#obtener el tipo del resultado de los operandos
@@ -628,15 +641,40 @@ def p_punto_cuadAssign(p):
 		#Si no es type_mismatch
 		if tipo_resultado != 'error':
 			#crear cuadruplo
-			# cuadrup = Cuadruplos(var_program.numero_cuadruplo, operador, operando_der, operando_izq)
+			cuadrup = Cuadruplos(var_program.numero_cuadruplo, operador, operando_der, None , operando_izq)
 
 			#se agrega el cuadruplo a la lista de cuadruplos y se incrementa el contador
-			#var_program.lista_cuadruplo.append(cuadrup)
-   			var_program.numero_cuadruplo += 1
+			var_program.lista_cuadruplo.append(cuadrup)
+			var_program.numero_cuadruplo += 1
 		else:
 			# print('Mismatch de operandos en: {0}'.format(p.lexer.lineno))
    			print('Mismatch de operandos en: {0}'.format(p.lexer.lineno))
 			#sys.exit()
+
+############################## P.N. para cuadruplos de ciclos y condicionales ###################################
+
+#Funcion que crea el cuadruplo de condicion GotoF para "IF" y "WHILE"
+def p_punto_crearGotoF(p):
+    '''punto_crearGotoF : '''
+    tipo_resultado = var_program.pila_tipo.pop()
+    #verificar que el resultado de la condicion sea booleano
+    if tipo_resultado != 'bool':
+        print('Mismatch de tipo en operacion')
+    else:
+        #Crear cuadruplo GotoF
+        resultado = var_program.pila_operando.pop()
+        cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'GotoF', resultado, None, None)
+        var_program.lista_cuadruplo.append(cuadrup)
+        #guardar numero de cuadruplo GotoF en pila de saltos para terminar despues
+        var_program.pila_saltos.append(var_program.numero_cuadruplo - 1)
+        var_program.numero_cuadruplo += 1
+
+# #P.N. que llama la funcion "cuadCondicion" para crear el cuadruplo GotoF
+# def p_punto_crearGotoF(p):
+#     '''punto_crearGotoF : '''
+#     cuadCondicion(p)
+    
+
 
 ## ARCHIVO A COMPILAR ##
 parser = yacc.yacc()
@@ -651,6 +689,7 @@ parser.parse(s)
 
 # Imprimir programa
 var_program.directorio_func.print_directorio()
+var_program.print_cuadruplos()
 # Imprimir los parametros de las funciones (comentar el borrado de la lista de parametros para que despliegue algo)
 # var_program.print_temporales_parametros_nombres()
 # var_program.print_temporales_parametros_tipos()

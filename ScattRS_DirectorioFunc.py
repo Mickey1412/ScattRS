@@ -120,7 +120,7 @@ class DireccionFunc():
     def get_funcion_variable(self, func_nombre, variable_nombre):
         funcion = self.get_f(func_nombre)
         if funcion is not None:
-            variable = funcion['variables'].get_f(variable_nombre)
+            variable = funcion['variables'].get_v(variable_nombre)
             if variable is not None:
                 return variable
             else:

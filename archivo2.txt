@@ -1,11 +1,13 @@
 programa hola 
 
 inicio(){
-    var int iA, iB;
+    var int iA, iB, iC;
     var float fC, fD, fE;
-    var int r;
+    var int r, d;
     var float fU;
 
-    r = iA / iB;
-    fU = fE * fC + fD;
+    d = (3 - 2) * 34 - 2.5;
+    r = (iC - iB) * iA / iB * iB; 
+    fU = fE + fC * fD - fE;
+    
 }

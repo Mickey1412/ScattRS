@@ -38,3 +38,7 @@ class Programa():
 	def print_temporales_parametros_tipos(self):
 		for i in range(len(self.parametros_temporales_nombres)):
 			print("tipo: ", self.parametros_temporales_tipos[i])
+   
+	def print_cuadruplos(self):
+		for i in range(len(self.lista_cuadruplo)):
+			print(self.lista_cuadruplo[i])
