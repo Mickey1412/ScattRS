@@ -1,3 +1,4 @@
+# coding=utf-8
 import ply.yacc as yacc
 from scattRS_AnalysisLex import tokens
 from scattRS_Programa import Programa
@@ -292,13 +293,13 @@ def p_print_A1(p):
 
 def p_cond(p):
 	'''
-	cond : IF PAREN_I exp_cond PAREN_D bloque cond_A1
+	cond : IF PAREN_I exp_cond PAREN_D punto_crearGotoF bloque cond_A1 punto_fillGotoF
 	'''
 	# print("Si se pudo cond")
 
 def p_cond_A1(p):
 	'''
-	cond_A1 : ELSE bloque 
+	cond_A1 : ELSE punto_else bloque 
 		| empty
 	'''
 
@@ -674,6 +675,31 @@ def p_punto_crearGotoF(p):
 #     '''punto_crearGotoF : '''
 #     cuadCondicion(p)
     
+#P.N. que completa los cuadruplos GotoF con la pila de saltos
+def p_punto_fillGotoF(p):
+	'''punto_fillGotoF : '''
+	#Se busca el numero del cuadruplo que tiene el GotoF que se va rellenar
+	numero_cuadruplo_fill = var_program.pila_saltos.pop()
+	cuadrup = var_program.lista_cuadruplo[numero_cuadruplo_fill]
+	#Se llama el proceso de llenar el cuadruplo GotoF de la clase cuadruplo 
+	#Se rellena el cuadruplo con con el numero del cuadruplo que sigue
+	cuadrup.cuadruplo_saltos(var_program.numero_cuadruplo)
+
+#P.N. que crea los cuadruplos de ELSE
+def p_punto_else(p):
+	'''punto_else : '''
+	#Se crea el cuadruplo GOTO y se agrega a la lista de cuadruplos
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'Goto', None, None, None)
+	var_program.lista_cuadruplo.append(cuadrup)
+
+	#Se busca el numerodel cuadruplo GotoF para llenar
+	numero_cuadruplo_fill = var_program.pila_saltos.pop()
+	cuadrup = var_program.lista_cuadruplo[numero_cuadruplo_fill]
+	#Se guarda el numero del cuadruplo del GOTO en la pila de saltos
+	var_program.pila_saltos.append(var_program.numero_cuadruplo - 1)
+	var_program.numero_cuadruplo += 1
+	#Se llena el GotoF del IF con el numero del cuadruplo que sigue despues de Goto
+	cuadrup.cuadruplo_saltos(var_program.numero_cuadruplo)
 
 
 ## ARCHIVO A COMPILAR ##
