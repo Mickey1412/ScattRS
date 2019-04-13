@@ -381,7 +381,7 @@ def p_readf(p):
 
 def p_while(p):
     '''
-	while : WHILE punto_guardarWhile PAREN_I exp_cond PAREN_D punto_crearGotoF bloque punto_guardarWhile
+	while : WHILE punto_guardarWhile PAREN_I exp_cond PAREN_D punto_crearGotoF bloque punto_regresarWhile
 	'''
 
 def p_empty(p):
@@ -708,7 +708,7 @@ def p_punto_guardarWhile(p):
 
 #P.N. que crea el cuadruplo GOTO para regresar a la condicion del WHILE y reiniciar el ciclo
 def p_punto_regreserWhile(p):
-	'''punto regresarWhile : '''
+	'''punto_regresarWhile : '''
 	#Se busca el numero del cuadruplo para rellenar el GotoF del WHILE y el cuadruplo de la condicion para el GOTO
 	numero_cuadruplo_fill = var_program.pila_saltos.pop()
 	numero_cuadruplo_regreso = var_program.pila_saltos.pop()
@@ -721,7 +721,14 @@ def p_punto_regreserWhile(p):
 	cuadrup_cond = var_program.lista_cuadruplo[numero_cuadruplo_fill]
 	cuadrup_cond.cuadruplo_saltos(var_program.numero_cuadruplo)
 
-
+#P.N. que crea el cuadruplo de PRINT
+def p_punto_print(p):
+	#sacar direccion de memoria de lo que se va a imprimir de la pila de operandos
+	operando = var_program.pila_operando.pop()
+	#crear cadruplo PRINT
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'PRINT', operando, None, None)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
 
 ## ARCHIVO A COMPILAR ##
 parser = yacc.yacc()
