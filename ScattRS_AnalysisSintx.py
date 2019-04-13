@@ -381,7 +381,7 @@ def p_readf(p):
 
 def p_while(p):
     '''
-	while : WHILE PAREN_I exp_cond PAREN_D bloque
+	while : WHILE punto_guardarWhile PAREN_I exp_cond PAREN_D punto_crearGotoF bloque punto_guardarWhile
 	'''
 
 def p_empty(p):
@@ -700,6 +700,27 @@ def p_punto_else(p):
 	var_program.numero_cuadruplo += 1
 	#Se llena el GotoF del IF con el numero del cuadruplo que sigue despues de Goto
 	cuadrup.cuadruplo_saltos(var_program.numero_cuadruplo)
+
+#P.N. que guarda el numero de cuadruplo de la expresion del WHILE para regresar mas tarde
+def p_punto_guardarWhile(p):
+	'''punto_guardarWhile : '''
+	var_program.pila_saltos.append(var_program.numero_cuadruplo)
+
+#P.N. que crea el cuadruplo GOTO para regresar a la condicion del WHILE y reiniciar el ciclo
+def p_punto_regreserWhile(p):
+	'''punto regresarWhile : '''
+	#Se busca el numero del cuadruplo para rellenar el GotoF del WHILE y el cuadruplo de la condicion para el GOTO
+	numero_cuadruplo_fill = var_program.pila_saltos.pop()
+	numero_cuadruplo_regreso = var_program.pila_saltos.pop()
+	#Se crea el cuadruplo GOTO
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'GOTO', None, None, numero_cuadruplo_regreso)
+	#Se inserta el cuadruplo a la lista de cuadruplos 
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
+	#Se rellena el GotoF para salir de ciclos
+	cuadrup_cond = var_program.lista_cuadruplo[numero_cuadruplo_fill]
+	cuadrup_cond.cuadruplo_saltos(var_program.numero_cuadruplo)
+
 
 
 ## ARCHIVO A COMPILAR ##
