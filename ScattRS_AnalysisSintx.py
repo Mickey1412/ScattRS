@@ -402,10 +402,12 @@ def p_punto_creardf(p):
 	
 
 # P.N. que agrega una funcion al directorio de funciones
+# agregar el cuadruplo de funciones y return
 def p_punto_addf(p):
 	'''punto_addf : '''
 	var_program.scope_actual = p[-4]
 	tipofuncion = p[-5]
+	direcciones_variables = []
 	
  	#Agrega la funcion al directorio 
 	var_program.directorio_func.agregar_func(var_program.scope_actual, tipofuncion)
@@ -413,8 +415,12 @@ def p_punto_addf(p):
  	# Agregar las variables en la tabla de variables
 	variables = zip(var_program.parametros_temporales_nombres, var_program.parametros_temporales_tipos)
 	for variable_nombre, variable_tipo in variables: 
-		var_program.directorio_func.agregar_variable(var_program.scope_actual, variable_tipo, variable_nombre)
-	
+		direccion = var_program.memoria.pedir_direccion_local(variable_tipo)
+		# print("direccion: ",direccion)
+		direcciones_variables.append(direccion)
+		var_program.directorio_func.agregar_variable(var_program.scope_actual, variable_tipo, variable_nombre, direccion)
+	var_program.directorio_func.agregar_parametro(var_program.scope_actual, list(var_program.parametros_temporales_tipos), list(direcciones_variables))
+ 
 	del var_program.parametros_temporales_nombres[:]
 	del var_program.parametros_temporales_tipos[:]
  	# falta agregar la memoria 
@@ -432,9 +438,10 @@ def p_punto_main(p):
 #P.N. que agrega varable a la tabla de variables de la funcion actual
 def p_punto_addv(p):
 	'''punto_addv : '''
-	#variable_tipo = p[-2]
+	# variable_tipo = p[-2]
+	# print("variable_tipo: ", variable_tipo)
 	#variable_nombre = p[-1]
-	variable_direccion = '0'
+	# variable_direccion = '0'
 	#print("pasa por aqui")
 	#print("variables temporales nombre: ",var_program.variables_temporales)
 	#print("variable tipo: ",var_program.variables_temporales_tipo)
@@ -445,7 +452,10 @@ def p_punto_addv(p):
 		#print(variable)
 		if not variable_declarada:
 			#pedir direccion de memoria dependiendo del scope
-
+			if var_program.scope_actual == var_program.scope_global:
+				variable_direccion = var_program.memoria.pedir_direccion_global(var_program.variables_temporales_tipo)
+			else: 
+				variable_direccion = var_program.memoria.pedir_direccion_local(var_program.variables_temporales_tipo)
 			# print("tipo de variable: " + str(var_program.variables_temporales_tipo) + " nombre de variables: " + str(variable) + " nombre de funcion: " + str(func_nombre))
 			var_program.directorio_func.agregar_variable(var_program.scope_actual, var_program.variables_temporales_tipo, variable, variable_direccion)
 	
@@ -644,18 +654,18 @@ def p_punto_cuadAssign(p):
 
 	if operador == '=':
 		#obtener operando con su tipo
-		print("lista 1 : ", var_program.pila_operando)
+		# print("lista 1 : ", var_program.pila_operando)
 		operando_der = var_program.pila_operando.pop()
-		print("derecho: ",operando_der)
+		# print("derecho: ",operando_der)
 		tipo_der = var_program.pila_tipo.pop()
-		print("lista 2 : ", var_program.pila_operando)
+		# print("lista 2 : ", var_program.pila_operando)
 		operando_izq = var_program.pila_operando.pop()
-		print("izquierdo: ",operando_izq)
+		# print("izquierdo: ",operando_izq)
 		tipo_izq = var_program.pila_tipo.pop()
 
 		#obtener el tipo del resultado de los operandos
 		tipo_resultado = var_program.cubo_semantico.get_tipo_semantica(tipo_izq, tipo_der, operador)
-		print("tipo_resultado: ", tipo_resultado)
+		# print("tipo_resultado: ", tipo_resultado)
 		#Si no es type_mismatch
 		if tipo_resultado != 'error':
 			#crear cuadruplo
@@ -753,7 +763,7 @@ def p_punto_print(p):
 parser = yacc.yacc()
 
 # nombre del archivo a compilar
-name = 'archivo2.txt'
+name = 'archivo3.txt'
 
 with open(name, 'r') as myfile:
 	s = myfile.read().replace('\n', '')

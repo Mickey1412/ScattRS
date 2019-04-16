@@ -3,6 +3,8 @@
 #25/03/2019
 from scattRS_DirectorioFunc import DireccionFunc
 from scattRS_CuboSemantico import CuboSemantico
+from scattRS_Memoria import Memoria
+
 
 #El proposito de esta clase es para crear las pilas necesarias para la creacion de cuadruplos, y para conectar las clases del directorio de funciones y cubo semantico al resto del programa
 class Programa():
@@ -23,6 +25,7 @@ class Programa():
 		self.numero_cuadruplo = 1
 		self.cubo_semantico = CuboSemantico()
 		self.arreglo_actual = {}
+		self.memoria = Memoria()
 
 	# def print_programa(self):
     # 		for i in range (len(self.variables_temporales)):

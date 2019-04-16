@@ -10,9 +10,9 @@ class Memoria():
     #La memoria se divide en segmentos de memoria tomados de la clase "Segmento_Memoria" 
     def __init__(self,):
         self.memoria_global = Segmentos('Global', 5000, 4000)
-        self.memoria_temporal = Segmentos('Local', 10000, 4000)
-        self.memoria_local = Segmentos('Constantes', 15000, 4000)
-        self.memoria_constantes = Segmentos('Temporal', 20000, 4000)
+        self.memoria_local = Segmentos('Local', 10000, 4000)
+        self.memoria_constantes = Segmentos('Constantes', 15000, 4000)
+        self.memoria_temporal = Segmentos('Temporal', 20000, 4000)
 
     def pedir_direccion_global(self, tipo_valor, valor = None):
         return self.memoria_global.pedir_direccion(tipo_valor, valor)

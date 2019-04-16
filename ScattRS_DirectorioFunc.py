@@ -54,7 +54,7 @@ class DireccionFunc():
         funcion = self.get_f(func_nombre)
         if funcion is not None:
             funcion['parametros']['tipo'] = lista_tipo
-            funcion['parametros']['dirreccion'] = lista_direcciones
+            funcion['parametros']['direccion'] = lista_direcciones
         else:
             print("La funcion que se intenta insertar no existe")
 	
