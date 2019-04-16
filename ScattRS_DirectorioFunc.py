@@ -90,7 +90,7 @@ class DireccionFunc():
             else:
                 # agrega variables dimensionada a la tabla de variables y se incrementa el numero de variables locales dentro de la funcion
                 funcion['variables'].agregar_vArreglo(variable)
-                for i in range(variable['limite_superior']):
+                for i in range(variable['limite_sup']):
                     funcion['num_de_variables_locales'][variable['tipo']] += 1
         else:
             print("La funcion donde se esta agregando la variable no existe")
@@ -112,7 +112,7 @@ class DireccionFunc():
     def agregar_temporal(self, func_nombre, temporal_tipo):
         funcion = self.get_f(func_nombre)
         if funcion is not None:
-            funcion['num_de_variables_temporalesm'][temporal_tipo] += 1
+            funcion['num_de_variables_temporales'][temporal_tipo] += 1
         else:
             print("La funcion donde se esta agregando la variable temporal no existe")
 

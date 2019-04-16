@@ -26,6 +26,7 @@ class Programa():
 		self.cubo_semantico = CuboSemantico()
 		self.arreglo_actual = {}
 		self.memoria = Memoria()
+		self.bandera_retorno = False
 
 	# def print_programa(self):
     # 		for i in range (len(self.variables_temporales)):

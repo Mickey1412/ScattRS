@@ -1,6 +1,7 @@
 programa hola 
 
 inicio(){
+    var int iArr[5];
     var int iA, iB, iC;
     var float fC, fD, fE;
     var int r, d;

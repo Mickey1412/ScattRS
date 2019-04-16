@@ -38,7 +38,7 @@ class Memoria():
         elif (direccion >= self.memoria_local.direccion_inicio and direccion <= self.memoria_local.direccion_final):
             return 'local'
         elif (direccion >= self.memoria_constantes.direccion_inicio and direccion <= self.memoria_constantes.direccion_final):
-            return 'constantes'
+            return 'constante'
         elif (direccion >= self.memoria_temporal.direccion_inicio and direccion <= self.memoria_temporal.direccion_final):
             return 'temporal'
         else:
@@ -48,13 +48,13 @@ class Memoria():
     def get_valor(self, direccion):
         tipo_memoria = self.determinar_tipo_memoria(direccion)
         if tipo_memoria == 'global':
-            self.memoria_global.get_valor(direccion)
+            return self.memoria_global.get_valor(direccion)
         elif tipo_memoria == 'local':
-            self.memoria_local.get_valor(direccion)
+            return self.memoria_local.get_valor(direccion)
         elif tipo_memoria == 'constante':
-            self.memoria_constantes.get_valor(direccion)
+            return self.memoria_constantes.get_valor(direccion)
         elif tipo_memoria == 'temporal':
-            self.memoria_temporal.get_valor(direccion)
+            return self.memoria_temporal.get_valor(direccion)
 
     def editar_valor(self, direccion, valor):
         tipo_memoria = self.determinar_tipo_memoria(direccion)

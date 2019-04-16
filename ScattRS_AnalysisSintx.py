@@ -3,6 +3,7 @@ import ply.yacc as yacc
 from scattRS_AnalysisLex import tokens
 from scattRS_Programa import Programa
 from scattRS_Cuadruplos import Cuadruplos
+import sys
 
 #variable que toma la clase programa para llamar los procedimientos del directorio de funciones y cuadruplos
 var_program = Programa()
@@ -10,7 +11,7 @@ var_program = Programa()
 # Gramaticas del compilador
 def p_programa(p):
 	'''
-	programa : PROGRAM ID punto_creardf progra_A1 progra_A2 MAIN PAREN_I PAREN_D punto_main bloque
+	programa : PROGRAM ID punto_gotoMain punto_creardf progra_A1 progra_A2 MAIN PAREN_I PAREN_D punto_main bloque
 	'''
 	print("Sintaxis Correcto :D \n")
 
@@ -64,9 +65,9 @@ def p_param(p):
 def p_var(p):
 	'''
 	var : PARAMS tipo ID var_A1 punto_addv SEMICOLON 
-	| PARAMS tipo ID arr SEMICOLON
+	| PARAMS tipo ID arr punto_addvarr SEMICOLON
 	'''
-	# print("SI SE var")
+	print("SI SE var")
 
 def p_var_A1(p):
 	'''
@@ -232,9 +233,10 @@ def p_exp_A1(p):
 
 def p_arr(p):
 	'''
-	arr : BRACKET_I INT_VALOR BRACKET_D
+	arr : BRACKET_I INT_VALOR punto_pilaOint BRACKET_D punto_identificarDim
 	'''
-	# print("SI SE arr")
+	print("cosa: ", p[2])
+	print("pasa por aqui")
 
 def p_term(p):
 	'''
@@ -467,24 +469,55 @@ def p_punto_addv(p):
 	#print("tipo de variable: " + str(variable_tipo) + " nombre de variable: " + str(variable_nombre) + " nombre de funcion: " + str(func_nombre))
 	#var_program.directorio_func.agregar_variable(func_nombre, variable_tipo, variable_nombre, variable_direccion)
 
+#P.N. que identifica la dimension de una variable arreglo
+def p_punto_identificarDim(p):
+	'''punto_identificarDim : '''
+	nombre_variable_arr = p[-5]
+	direccion_variable_arr = var_program.pila_operando.pop()
+	print(direccion_variable_arr)
+	dimension_size = var_program.memoria.get_valor(direccion_variable_arr)
+	print(dimension_size)
+	dimension_tipo = var_program.pila_tipo.pop()
+	print(dimension_tipo)
 
+	#verificar la dimension del arreglo
+	if dimension_tipo != 'int':
+		print("los valores del arreglo deben ser de tipo entero")
+		sys.exit()
+	elif dimension_size < 1:
+		print("la dimension del arreglo debe ser mayor a 0")
+		sys.exit()
+	else:
+		#Si el arreglo es valido le inserta la informacion de la variable 
+		
+		var_program.arreglo_actual = {
+			'nombre' : nombre_variable_arr,
+			'limite_inf' : 0,
+			'limite_sup' : dimension_size,
+		}
 
 #P.N. que agrega una variable dimensionada (arreglo) a la tabla de variables de la funcion actual
 def p_punto_addvarr(p):
 	'''punto_addvarr : '''
 	variable_tipo = p[-3]
 	variable = var_program.arreglo_actual
-	variable_direccion = '0'
+	#variable_direccion = '0'
 	variable_declarada = var_program.directorio_func.verificar_variable_existe(var_program.scope_actual, variable['nombre'])
 
 	if not variable_declarada:
 		#pedir direccion de memoria dependiendo de scope
+		if var_program.scope_actual == var_program.scope_global:
+			direccion_variable = var_program.memoria.pedir_direccion_global_arreglo(variable_tipo, variable['limite_sup'])
+		else:
+			direccion_variable = var_program.memoria.pedir_direccion_local_arreglo(variable_tipo, variable['limite_sup'])
+		
 
 		variable['tipo'] = variable_tipo
-		variable['direccion_memoria'] = variable_direccion
+		variable['direccion_memoria'] = direccion_variable
 
 		var_program.directorio_func.agregar_variable_dimensionada(var_program.scope_actual, variable)
 
+#P.N. que crea los cuadruplos para 
 
 # P.N. que identifica el tamaño de los arreglos cuando se declaren
 # def p_punto_declaracion_varr(p):
@@ -516,15 +549,16 @@ def cuadOperaciones(p):
 	tipo_resultado = var_program.cubo_semantico.get_tipo_semantica(tipo_izq, tipo_der, operador)
 	if tipo_resultado != 'error':
 		#obtener una direccion temporal de memoria
-		#####
+		direccion_temporal_var = var_program.memoria.pedir_direccion_temporal(tipo_resultado)
+		var_program.directorio_func.agregar_temporal(var_program.scope_actual, tipo_resultado)
 
 		#Crear cuadruplo
-		cuadrup = Cuadruplos(var_program.numero_cuadruplo, operador, operando_izq, operando_der, resultado_cuad)
+		cuadrup = Cuadruplos(var_program.numero_cuadruplo, operador, operando_izq, operando_der, direccion_temporal_var)
 
 		#Se agrega el cuadruplo a la lista de cuadruplos y el resultado a la pila de operandos y pila de tipos
 		var_program.lista_cuadruplo.append(cuadrup)
 		var_program.numero_cuadruplo += 1
-		var_program.pila_operando.append(resultado_cuad)
+		var_program.pila_operando.append(direccion_temporal_var)
 		var_program.pila_tipo.append(tipo_resultado)
 	else:
 		#Si la operacion es entre 2 tipos de variables invalidas
@@ -572,38 +606,45 @@ def p_punto_pilaOvar(p):
 			#sys.exit()
 		else:
 			#Se agrega variable global a la pila de operandos
-			var_program.pila_operando.append(variable['nombre'])
+			var_program.pila_operando.append(variable['direccion_memoria'])
 			var_program.pila_tipo.append(variable['tipo'])
 	else:
 		#Se agrega variable local a la pila de operandos
-			var_program.pila_operando.append(variable['nombre'])
+			var_program.pila_operando.append(variable['direccion_memoria'])
 			var_program.pila_tipo.append(variable['tipo'])
 
 #P.N. que inserta una constante entera a la pila de operandos
 def p_punto_pilaOint(p):
 	'''punto_pilaOint : '''
 	#busqueda o asignacion de direccion de memoria 
-	#########
+	direccion_constante = var_program.memoria.ver_valor_constante_existe('int', int(p[-1]))
+	if direccion_constante is None:
+		direccion_constante = var_program.memoria.pedir_direccion_constante('int', int(p[-1]))
 
-	var_program.pila_operando.append(int(p[-1]))
+	
+	var_program.pila_operando.append(direccion_constante)
 	var_program.pila_tipo.append('int')
 
 #P.N. que inserta una constante flotante a la pila de operandos
 def p_punto_pilaOfloat(p):
 	'''punto_pilaOfloat : '''
 	#busqueda o asignacion de direccion de memoria 
-	#########
+	direccion_constante = var_program.memoria.ver_valor_constante_existe('float', float(p[-1]))
+	if direccion_constante is None:
+		direccion_constante = var_program.memoria.pedir_direccion_constante('float', float(p[-1]))
 
-	var_program.pila_operando.append(float(p[-1]))
+	var_program.pila_operando.append(direccion_constante)
 	var_program.pila_tipo.append('float')
 
 #P.N. que inserta una constante booleana a la pila de operandos
 def p_punto_pilaObool(p):
 	'''punto_pilaObool : '''
 	#busqueda o asignacion de direccion de memoria 
-	#########
+	direccion_constante = var_program.memoria.ver_valor_constante_existe('bool', bool(p[-1]))
+	if direccion_constante is None:
+		direccion_constante = var_program.memoria.pedir_direccion_constante('bool', bool(p[-1]))
 
-	var_program.pila_operando.append(bool(p[-1]))
+	var_program.pila_operando.append(direccion_constante)
 	var_program.pila_tipo.append('bool')
  
 def p_punto_pilaOString(p):
@@ -758,12 +799,42 @@ def p_punto_print(p):
 	var_program.lista_cuadruplo.append(cuadrup)
 	var_program.numero_cuadruplo += 1
  
+############################## P.N. para generacion de cuadruplos de funciones ######################################################
+
+#P.N. para generar el cuadruplo GOTO que salta a la funcion "main"
+def p_punto_gotoMain(p):
+	'''punto_gotoMain : '''
+	cuadrup =Cuadruplos(var_program.numero_cuadruplo, 'GOTO', 'MAIN', None, None)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
+
+#P.N. que genera el cuadruplo ENDPROC para el final de una funcion
+def p_punto_endProc(p):
+	'''punto_endProc : '''
+	tipo_funcion = p[-6]
+
+	if (tipo_funcion == 'void' and var_program.bandera_retorno):
+		print("La funcion no debio de regresar un valor")
+		sys.exit()
+	elif tipo_funcion != 'void' and not var_program.bandera_retorno:
+		print("La funcion debio de haber regresado un valor")
+		sys.exit()
+	else:
+		#Se genera el cuadruplo ENDPROC
+		cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'ENDPROC', None, None, None)
+		var_program.lista_cuadruplo.append(cuadrup)
+
+	#
+
+#P.N. que genera el cuadruplo ERA 
+
+#P.N. 
 
 ## ARCHIVO A COMPILAR ##
 parser = yacc.yacc()
 
 # nombre del archivo a compilar
-name = 'archivo3.txt'
+name = 'archivo2.txt'
 
 with open(name, 'r') as myfile:
 	s = myfile.read().replace('\n', '')
