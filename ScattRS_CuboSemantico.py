@@ -29,7 +29,7 @@ class CuboSemantico():
                 	"-" : "float",
                 	"*" : "float",
                 	"/" : "float",
-                	"=" : "float",
+                	"=" : "int", #verificar si cambiar a error
                 	"==" : "bool",
                 	"!=" : "bool",
                 	">" : "bool",

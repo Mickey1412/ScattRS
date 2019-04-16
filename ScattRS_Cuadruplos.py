@@ -4,7 +4,7 @@
 
 class Cuadruplos():
 	"""docstring for Cuadruplos"""
-	def __init__(self, numero_cuadruplo, operador, operando_Der, operando_Izq, resultado):
+	def __init__(self, numero_cuadruplo, operador, operando_Izq, operando_Der, resultado):
 		self.numero_cuadruplo = numero_cuadruplo
 		self.operador = operador
 		self.operando_Der = operando_Der

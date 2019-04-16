@@ -15,28 +15,26 @@ class DireccionFunc():
 		
     def agregar_func(self, func_nombre, func_tipo, func_param = [], func_para_dir = []):
         self.lista_func[func_nombre] = {
-        'nombre' : func_nombre,
-        'tipo_retorno' : func_tipo,
-        'direccion_retorno' : -1,
-        'numero_cuadruplo' : -1,
-        'parametros' : {
-        'tipo' : func_param,
-        'direccion' : func_para_dir,
+            'nombre' : func_nombre,
+            'tipo_retorno' : func_tipo,
+            'direccion_retorno' : -1,
+            'numero_cuadruplo' : -1,
+            'parametros' : {
+            'tipo' : func_param,
+            'direccion' : func_para_dir,
         },
         'variables' : Tabla_Variables(),
         'num_de_variables_locales' : {
-        'int' : 0,
-        'float' : 0,
-        'char' : 0,
-        'string' : 0,
-        'bool' : 0
+            'int' : 0,
+            'float' : 0,
+            'char' : 0,
+            'bool' : 0
         },
         'num_de_variables_temporales' : {
-        'int' : 0,
-        'float' : 0,
-        'char' : 0,
-        'string' : 0,
-        'bool' : 0
+            'int' : 0,
+            'float' : 0,
+            'char' : 0,
+            'bool' : 0
         }
     }
 	
@@ -62,15 +60,27 @@ class DireccionFunc():
 	
     def agregar_variable(self, func_nombre, variable_tipo, variable_nombre, variable_direccion=0):
         funcion = self.get_f(func_nombre)
+        # print("pasa por aqui")
+        # print("funcion: ", funcion)
+        # # print(funcion is not None)
+        # # print(funcion['variables'].busqueda_v(variable_nombre))
+        # print("nombre de funcion: ", func_nombre)
+        # print("variable tipo: ", variable_tipo)
+        # print("variable nombre: ", variable_nombre)
+        # print("variable direccion: ", variable_direccion)
         if funcion is not None:
             if funcion['variables'].busqueda_v(variable_nombre):
                 print("existe otra variable con este nombre dentro de la funcion")
             else:
                 #agrega variables a la tabla de variables y se incrementa el numero de variables locales dentro de la funcion
                 funcion['variables'].agregar_v(variable_tipo, variable_nombre, variable_direccion)
-                funcion['num_variables_locales'][variable_tipo] += 1
+                # print(funcion['variables'].agregar_v(variable_tipo, variable_nombre, variable_direccion))
+                funcion['num_de_variables_locales'][variable_tipo] += 1
+                # print(funcion['num_de_variables_locales'][variable_tipo])
         else:
             print("La funcion donde se esta agregando la variable no existe")
+        # print(funcion['variables'].get_v(variable_nombre))
+        # print("tabla de variables: ", funcion['variables'].printTable())
 
     def agregar_variable_dimensionada(self, func_nombre, variable):
         funcion = self.get_f(func_nombre)
@@ -90,11 +100,13 @@ class DireccionFunc():
         funcion = self.get_f(func_nombre)
         if funcion is not None:
             if funcion['variables'].busqueda_v(variable_nombre):
+                print("La variable " + variable_nombre + " ya fue declarada")
                 return True
             else:
                 return False
         else:
-            print("La variable " + variable_nombre + " ya fue declarada")
+            #print("La variable " + variable_nombre + " ya fue declarada")
+            print("La funcion donde se esta agregando la variable temporal no existe")
 
     #agrega una variable temporal a la funcion
     def agregar_temporal(self, func_nombre, temporal_tipo):
@@ -108,7 +120,7 @@ class DireccionFunc():
     def get_funcion_variable(self, func_nombre, variable_nombre):
         funcion = self.get_f(func_nombre)
         if funcion is not None:
-            variable = funcion['variables'].get_f(variable_nombre)
+            variable = funcion['variables'].get_v(variable_nombre)
             if variable is not None:
                 return variable
             else:
@@ -159,14 +171,15 @@ class DireccionFunc():
     	
     #imprime la lista de funciones del directorio con sus propiedades
     def print_directorio(self):
+        # funcion = self.busqueda_f('programa')
+        # print("tabla de variables: ", funcion['variables'].printTable())
         for funcion, propiedades in self.lista_func.items():
             print("funcion: " + str(funcion))
 
             #ciclo que hace que se imprima la tabla de variables solo si el valor es una instancia de la clase
             for prop, valor in propiedades.items():
                 if isinstance(valor, Tabla_Variables):
-                    print("  " + str(prop) + " : " +
-                    json.dumps(valor.list_variables, indent=4))
+                    print("  " + str(prop) + " : " + json.dumps(valor.list_variables, indent=4))
                 elif isinstance(valor, dict):
                     print("  " + str(prop) + " : " + json.dumps(valor, indent=4))
                 else:
