@@ -31,7 +31,7 @@ def p_progra_A2(p):
 
 def p_funcion(p):
 	'''
-	funcion : FUNC func_tipo ID PAREN_I func_param PAREN_D punto_addf bloque
+	funcion : FUNC func_tipo ID PAREN_I func_param PAREN_D punto_addf bloque punto_endProc
 	'''
 	# print("SI SE PUDO funcion")
 	# print(p[3])
@@ -67,7 +67,7 @@ def p_var(p):
 	var : PARAMS tipo ID var_A1 punto_addv SEMICOLON 
 	| PARAMS tipo ID arr punto_addvarr SEMICOLON
 	'''
-	print("SI SE var")
+	#print("SI SE var")
 
 def p_var_A1(p):
 	'''
@@ -149,8 +149,8 @@ def p_assign_A2(p):
 
 def p_args(p):
 	'''
-	args : expression 
-		| expression COMA args 
+	args : expression punto_params
+		| expression punto_params COMA args 
 		| empty
 	'''
 	# print("SI SE args")
@@ -200,6 +200,7 @@ def p_var_cte(p):
 		| TRUE punto_pilaObool
 		| FALSE punto_pilaObool
 		| CHAR_VALOR punto_pilaOchar
+		| proc_call
 	'''
 	# print("exp: " + str(p[1]))
 	# print("SI SE var_cte")
@@ -207,15 +208,27 @@ def p_var_cte(p):
 def p_var_cte_A1(p):
 	'''
 	var_cte_A1 : BRACKET_I exp BRACKET_D 
-		| PAREN_I var_cte_A2 PAREN_D 
 		| empty
 	'''
+
+
+#def p_var_cte_A1(p):
+#	'''
+#	var_cte_A1 : BRACKET_I exp BRACKET_D 
+#		| PAREN_I punto_fondoIni punto_era var_cte_A2 PAREN_D punto_fondoFin punto_gosub
+#		| empty
+#	'''
 
 def p_var_cte_A2(p):
 	'''
 	var_cte_A2 : exp COMA var_cte_A2 
 		| exp 
 		| empty
+	'''
+
+def p_proc_call(p):
+	'''
+	proc_call : ID PAREN_I punto_fondoIni punto_era args PAREN_D punto_fondoFin punto_gosub punto_funcCallR
 	'''
 
 def p_exp(p):
@@ -308,7 +321,7 @@ def p_cond_A1(p):
 
 def p_func_call(p):
 	'''
-	func_call : ID PAREN_I args PAREN_D
+	func_call : ID PAREN_I punto_fondoIni punto_era args PAREN_D punto_fondoFin punto_gosub void_check SEMICOLON
 	'''
 	# print("Si se pudo func_call")
 
@@ -372,7 +385,7 @@ def p_estadistica_A4(p):
 
 def p_return(p):
 	'''
-	return : RETURN exp SEMICOLON
+	return : RETURN exp SEMICOLON punto_returnTrue
 	'''
 	# print("Si se pudo return")
 
@@ -413,6 +426,14 @@ def p_punto_addf(p):
 	
  	#Agrega la funcion al directorio 
 	var_program.directorio_func.agregar_func(var_program.scope_actual, tipofuncion)
+
+	#Generar el cuadruplo de inicio de la funcion 
+	var_program.directorio_func.set_numero_cuadruplo(var_program.scope_actual, var_program.numero_cuadruplo)
+
+	if tipofuncion != 'void':
+		#establece direccion de retorno de la funcion
+		direccion_funcion = var_program.memoria.pedir_direccion_global(tipofuncion)
+		var_program.directorio_func.set_funcion_direccion(var_program.scope_actual, direccion_funcion)
 	
  	# Agregar las variables en la tabla de variables
 	variables = zip(var_program.parametros_temporales_nombres, var_program.parametros_temporales_tipos)
@@ -516,6 +537,14 @@ def p_punto_addvarr(p):
 		variable['direccion_memoria'] = direccion_variable
 
 		var_program.directorio_func.agregar_variable_dimensionada(var_program.scope_actual, variable)
+def p_void_check(p):
+	'''void_check : '''
+	nombre_funcion = p[-8]
+	funcion_objeto = var_program.directorio_func.get_f(nombre_funcion)
+
+	if funcion_objeto["tipo_retorno"] != 'void':
+		print("Esta funcion no se puede usar como procedimiento")
+		#sys.exit()
 
 #P.N. que crea los cuadruplos para 
 
@@ -811,7 +840,8 @@ def p_punto_gotoMain(p):
 #P.N. que genera el cuadruplo ENDPROC para el final de una funcion
 def p_punto_endProc(p):
 	'''punto_endProc : '''
-	tipo_funcion = p[-6]
+	tipo_funcion = p[-7]
+	#print(var_program.bandera_retorno)
 
 	if (tipo_funcion == 'void' and var_program.bandera_retorno):
 		print("La funcion no debio de regresar un valor")
@@ -824,17 +854,104 @@ def p_punto_endProc(p):
 		cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'ENDPROC', None, None, None)
 		var_program.lista_cuadruplo.append(cuadrup)
 
-	#
+	#Rellena el los cuadruplos Goto if si existen
+	if var_program.bandera_retorno:
+		while var_program.lista_retorno:
+			numero_cuadruplo_fill = var_program.lista_retorno.pop()
+			var_program.lista_cuadruplo[numero_cuadruplo_fill - 1].cuadruplo_saltos(var_program.numero_cuadruplo)
 
-#P.N. que genera el cuadruplo ERA 
+	var_program.numero_cuadruplo += 1
+	var_program.bandera_retorno = False
 
-#P.N. 
+	#Resetea y borra la memoria temporal
+	var_program.scope_actual = var_program.scope_global
+	var_program.memoria.reset_temporal()
+
+#P.N. que genera el cuadruplo ERA, verifica que una funcion exista en el directorio de funciones y crea su espacio en memoria
+def p_punto_era(p):
+	'''punto_era : '''
+	funcion = p[-3]
+	#Verificar que la funcion existe
+	if var_program.directorio_func.busqueda_f(funcion):
+		# Creacion del cuadruplo ERA
+		cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'ERA', funcion, None, None)
+		var_program.lista_cuadruplo.append(cuadrup)
+		var_program.numero_cuadruplo += 1
+		#Se obtienen los parametros de una funcion
+		parametros = var_program.directorio_func.get_funcion_parametros(funcion)
+		var_program.argumentos_temporales_tipos = list(parametros['tipo'])
+		print(var_program.argumentos_temporales_tipos)
+	else:
+		print("Error: La funcion que se esta llamando, No existe")
+		sys.exit()
+
+#P.N. que resuelve un argumento y genera los cuadruplos PARAMS
+def p_punto_params(p):
+	'''punto_params : '''
+	#Se verifica que no haya mas argumentos que parametros de la funcion que se llama
+	if var_program.argumentos_temporales_tipos:
+		#Se obtiene el argumento y su tipo de las pilas 
+		argumento = var_program.pila_operando.pop()
+		argumento_tipo = var_program.pila_tipo.pop()
+		parametro_tipo = var_program.argumentos_temporales_tipos.pop(0)
+		#Se asegura que el tipo del argumento y el tipo de parametro sean iguales 
+		if argumento_tipo == parametro_tipo:
+			cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'PARAM', argumento, None, None)
+			var_program.lista_cuadruplo.append(cuadrup)
+			var_program.numero_cuadruplo += 1
+		else:
+			print("Error: El argumento con el que se llama la funcion, no es del mismo tipo que su parametro")
+			sys.exit()
+	else:
+		print("Error: mismatch en numero de argumentos")
+		sys.exit()
+
+#P.N. que resuelve la llamada a una funcion y genera los cuadruplos GOSUB
+def p_punto_gosub(p): 
+	'''punto_gosub : '''
+	#Verifica que no haya mas parametros que argumentos
+	if not var_program.argumentos_temporales_tipos:
+		#Obtiene la funcion y su numero de cuadruplo
+		funcion = p[-7]
+		funcion_numero_cuadruplo = var_program.directorio_func.get_numero_cuadruplo(funcion)
+		#Se genera el cuadruplo GOSUB 
+		cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'GOSUB', funcion, None, funcion_numero_cuadruplo)
+		var_program.lista_cuadruplo.append(cuadrup)
+		var_program.numero_cuadruplo += 1
+	else:
+		print("Error: Mismatch en el numero de parametros")
+		sys.exit()
+
+#P.N. que al leer el RETURN  marca la bandera_retorno como TRUE
+def p_punto_returnTrue(p):
+	'''punto_returnTrue : '''
+	var_program.bandera_retorno = True
+
+#P.N. que agrega el resultado producido por la llamada de funcion a la pila de operandos y crea su cuadruplo de asignacion
+def p_punto_funcCallR(p):
+	'''punto_funcCallR : '''
+	funcion_llamada = p[-8]
+	funcion = var_program.directorio_func.get_f(funcion_llamada)
+	funcion_retorno = funcion['direccion_retorno']
+	funcion_tipo = funcion['tipo_retorno']
+	#Se pide una variable temporal para el resultado de la funcion que se llamo
+	direccion_temporal_var = var_program.memoria.pedir_direccion_temporal(funcion_tipo)
+	var_program.directorio_func.agregar_temporal(var_program.scope_actual, funcion_tipo)
+	#Se crea el cuadruplo que asigna el valor de la funcion a la direccion temporal y la agrega a la pila de operandos
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, '=', funcion_retorno, None, direccion_temporal_var)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
+	#Se sube la direccion de memoria a pila de operadandos
+	var_program.pila_operando.append(direccion_temporal_var)
+	var_program.pila_tipo.append(funcion_tipo)
+
+
 
 ## ARCHIVO A COMPILAR ##
 parser = yacc.yacc()
 
 # nombre del archivo a compilar
-name = 'archivo2.txt'
+name = 'archivo4.txt'
 
 with open(name, 'r') as myfile:
 	s = myfile.read().replace('\n', '')

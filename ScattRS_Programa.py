@@ -17,6 +17,7 @@ class Programa():
 		self.variables_temporales_tipo = ""
 		self.parametros_temporales_nombres = []
 		self.parametros_temporales_tipos = []
+		self.argumentos_temporales_tipos = []
 		self.pila_operando = []
 		self.pila_operador = []
 		self.pila_tipo = []
@@ -27,6 +28,7 @@ class Programa():
 		self.arreglo_actual = {}
 		self.memoria = Memoria()
 		self.bandera_retorno = False
+		self.lista_retorno = []
 
 	# def print_programa(self):
     # 		for i in range (len(self.variables_temporales)):
