@@ -342,15 +342,15 @@ def p_bloque_A1(p):
 def p_estadistica(p):
 	'''
 	estadistica : PROM estadistica_A1 
-		| MODA estadistica_A1 
-		| MEDIAN estadistica_A1 
-		| SUM estadistica_A1 
-		| DESVIA estadistica_A2 
-		| PEND estadistica_A2 
-		| VARIANCE estadistica_A1 
-		| R_SQUARE estadistica_A2 
+		| MODA estadistica_A1 punto_cuadModa
+		| MEDIAN estadistica_A1 punto_cuadMedian
+		| SUM estadistica_A1 punto_cuadSum
+		| DESVIA estadistica_A2 punto_cuadDesv
+		| PEND estadistica_A2 punto_cuadPend
+		| VARIANCE estadistica_A1 punto_cuadVarian
+		| R_SQUARE estadistica_A2 punto_cuadRsquar
 		| BINOMIAL estadistica_A3 
-		| BERNOULLI estadistica_A2
+		| BERNOULLI estadistica_A2 punto_cuadBernou
 	'''
 	# print("Si se pudo estadistica")
 	# print(p[1])
@@ -363,24 +363,27 @@ def p_estadisitica_graph(p):
 
 def p_estadistica_A1(p):
 	'''
-	estadistica_A1 : PAREN_I ID PAREN_D 
+	estadistica_A1 : PAREN_I ID punto_pilaOvar PAREN_D 
 	'''
 	# print(p[1],p[2],p[3],p[4])
 
 def p_estadistica_A2(p):
 	'''
-	estadistica_A2 : PAREN_I ID COMA ID PAREN_D 
+	estadistica_A2 : PAREN_I ID punto_pilaOvar COMA ID punto_pilaOvar PAREN_D 
 	'''
+	print("pasa por estadisticaA2")
 
 def p_estadistica_A3(p):
 	'''
-	estadistica_A3 : PAREN_I ID COMA ID COMA ID PAREN_D 
+	estadistica_A3 : PAREN_I ID punto_pilaOvar COMA ID punto_pilaOvar COMA ID punto_pilaOvar PAREN_D 
 	'''
+	print("pasa por estadisticaA3")
+	print(var_program.pila_operando)
 
 def p_estadistica_A4(p):
 	'''
-	estadistica_A4 : estadistica_A2 
-		| estadistica_A3
+	estadistica_A4 : estadistica_A2 punto_cuadScatt
+		| estadistica_A3 punto_cuadScattPend
 	'''
 
 def p_return(p):
@@ -626,6 +629,7 @@ def p_punto_logico(p):
 def p_punto_pilaOvar(p):
 	'''punto_pilaOvar : '''
 	variable = var_program.directorio_func.get_funcion_variable(var_program.scope_actual, p[-1])
+	print("variable: ", variable)
 
 	if variable is None:
 		#Verifica si la varaible existe en el scope global
@@ -749,7 +753,7 @@ def p_punto_cuadAssign(p):
    			print('Mismatch de operandos en: {0}'.format(p.lexer.lineno))
 			#sys.exit()
 
-############################## P.N. para cuadruplos de ciclos y condicionales ###################################
+################################################### P.N. para cuadruplos de ciclos y condicionales ###############################################
 
 #Funcion que crea el cuadruplo de condicion GotoF para "IF" y "WHILE"
 def p_punto_crearGotoF(p):
@@ -828,7 +832,7 @@ def p_punto_print(p):
 	var_program.lista_cuadruplo.append(cuadrup)
 	var_program.numero_cuadruplo += 1
  
-############################## P.N. para generacion de cuadruplos de funciones ######################################################
+################################################# P.N. para generacion de cuadruplos de funciones ######################################################
 
 #P.N. para generar el cuadruplo GOTO que salta a la funcion "main"
 def p_punto_gotoMain(p):
@@ -945,6 +949,171 @@ def p_punto_funcCallR(p):
 	var_program.pila_operando.append(direccion_temporal_var)
 	var_program.pila_tipo.append(funcion_tipo)
 
+##################################################### P.N. que generan los cuadruplos de funciones especiales #################################################
+
+#P.N. que crea una direccion temporal para las funciones especiales y mete la direccion a la pila de oprenados
+#def p_punto_agregarEspecial(p):
+#	'''punto_agregarEspecial : '''
+
+
+#P.N. para el cuadruplo de la funcion: MODA
+def p_punto_cuadModa(p):
+	'''punto_cuadModa : '''
+	#Se hace pop para sacar el arreglo de la pila de operandos
+	id_variable = p[-7]
+	#print("tipo_var: ", id_variable)
+	variable = var_program.directorio_func.get_funcion_variable(var_program.scope_actual, id_variable)
+	#print("variable", variable)
+	tipo_var = variable['tipo']
+	#print("tipo de variable: ", tipo_var)
+	temporal = var_program.memoria.pedir_direccion_temporal(tipo_var)
+	#print("temporal: ", temporal)
+	operand = var_program.pila_operando.pop()
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'MODA', operand, None, temporal)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
+	var_program.pila_operando.append(temporal)
+	var_program.pila_tipo.append(tipo_var)
+
+#P.N. para el cuadruplo de la funcion: MEDIANA
+def p_punto_cuadMedian(p):
+	'''punto_cuadMedian : '''
+	#Se hace pop para sacar el arreglo de la pila de operandos
+	id_variable = p[-7]
+	variable = var_program.directorio_func.get_funcion_variable(var_program.scope_actual, id_variable)
+	tipo_var = variable['tipo']
+	temporal = var_program.memoria.pedir_direccion_temporal(tipo_var)
+	operand = var_program.pila_operando.pop()
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'MEDIAN', operand, None, temporal)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
+	var_program.pila_operando.append(temporal)
+	var_program.pila_tipo.append(tipo_var)
+
+#P.N. para el cuadruplo de la funcion: SUMATORIA
+def p_punto_cuadSum(p):
+	'''punto_cuadSum : '''
+	#Se hace pop para sacar el arreglo de la pila de operandos
+	id_variable = p[-7]
+	#print("tipo_var: ", id_variable)
+	variable = var_program.directorio_func.get_funcion_variable(var_program.scope_actual, id_variable)
+	#print("variable", variable)
+	tipo_var = variable['tipo']
+	#print("tipo de variable: ", tipo_var)
+	temporal = var_program.memoria.pedir_direccion_temporal(tipo_var)
+	#print("temporal: ", temporal)
+	operand = var_program.pila_operando.pop()
+	operand = var_program.pila_operando.pop()
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'SUM', operand, None, temporal)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
+	var_program.pila_operando.append(temporal)
+	var_program.pila_tipo.append(tipo_var)
+
+#P.N. para el cuadruplo de la funcion: DESVIACION ESTANDAR
+def p_punto_cuadDesv(p):
+	'''punto_cuadDesv : '''
+	#Se hace pop para sacar los arreglos de la pila de operandos
+	id_variable = p[-7]
+	#print("tipo_var: ", id_variable)
+	variable = var_program.directorio_func.get_funcion_variable(var_program.scope_actual, id_variable)
+	#print("variable", variable)
+	tipo_var = variable['tipo']
+	#print("tipo de variable: ", tipo_var)
+	temporal = var_program.memoria.pedir_direccion_temporal(tipo_var)
+	#print("temporal: ", temporal)
+	operand1 = var_program.pila_operando.pop()
+	operand2 = var_program.pila_operando.pop()
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'DESV', operand2, operand1, temporal)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
+	var_program.pila_operando.append(temporal)
+	var_program.pila_tipo.append(tipo_var)
+
+#P.N. para el cuadruplo de la funcion: PENDIENTE
+###Verificar que regrese un arreglo 
+def p_punto_cuadPend(p):
+	'''punto_cuadPend : '''
+	#Se hace pop para sacar el arreglo de la pila de operandos
+	operand1 = var_program.pila_operando.pop()
+	operand2 = var_program.pila_operando.pop()
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'PEND', operand2, operand1, None)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
+
+def p_punto_cuadVarian(p):
+	'''punto_cuadVarian : '''
+	id_variable = p[-7]
+	variable = var_program.directorio_func.get_funcion_variable(var_program.scope_actual, id_variable)
+	tipo_var = variable['tipo']
+	temporal = var_program.memoria.pedir_direccion_temporal(tipo_var)
+	operand = var_program.pila_operando.pop()
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'VARIANCE', operand, None, temporal)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
+	var_program.pila_operando.append(temporal)
+	var_program.pila_tipo.append(tipo_var)
+
+#P.N. para el cuadruplo de la funcion: R_SQUARE
+def p_punto_cuadRsquar(p):
+	'''punto_cuadRsquar : '''
+	#Se hace pop para sacar los arreglos de la pila de operandos
+	id_variable = p[-7]
+	#print("tipo_var: ", id_variable)
+	variable = var_program.directorio_func.get_funcion_variable(var_program.scope_actual, id_variable)
+	#print("variable", variable)
+	tipo_var = variable['tipo']
+	#print("tipo de variable: ", tipo_var)
+	temporal = var_program.memoria.pedir_direccion_temporal(tipo_var)
+	#print("temporal: ", temporal)
+	operand1 = var_program.pila_operando.pop()
+	operand2 = var_program.pila_operando.pop()
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'RSQUARE', operand2, operand1, temporal)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
+	var_program.pila_operando.append(temporal)
+	var_program.pila_tipo.append(tipo_var)
+
+#P.N. para el cuadruplo de la funcion: BERNOULLI
+def p_punto_cuadBernou(p):
+	'''punto_cuadBernou : '''
+	#Se hace pop para sacar los arreglos de la pila de operandos
+	id_variable = p[-7]
+	print("tipo_var: ", id_variable)
+	variable = var_program.directorio_func.get_funcion_variable(var_program.scope_actual, id_variable)
+	print("variable", variable)
+	tipo_var = variable['tipo']
+	print("tipo de variable: ", tipo_var)
+	temporal = var_program.memoria.pedir_direccion_temporal(tipo_var)
+	print("temporal: ", temporal)
+	operand1 = var_program.pila_operando.pop()
+	operand2 = var_program.pila_operando.pop()
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'BERNOU', operand1, operand2, temporal)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
+	var_program.pila_operando.append(temporal)
+	var_program.pila_tipo.append(tipo_var)
+
+#P.N. para el cuadruplo de la funcion: GRAPH_SCATTER sin Pendiente
+def p_punto_cuadScatt(p):
+	'''punto_cuadScatt : '''
+	#Se hace pop para sacar los arreglos de la pila de operandos
+	operand1 = var_program.pila_operando.pop()
+	operand2 = var_program.pila_operando.pop()
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'SCATT', operand2, operand1, None)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
+
+#P.N. para el cuadruplo de la funcion: GRAPH_SCATTER con Pendiente
+def p_punto_cuadScattPend(p):
+	'''punto_cuadScattPend : '''
+	#Se hace pop para sacar los arreglos de la pila de operandos
+	operand1 = var_program.pila_operando.pop()
+	operand2 = var_program.pila_operando.pop()
+	operand3 = var_program.pila_operador.pop()
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'SCATTPEND', operand2, operand1, operand3)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
 
 
 ## ARCHIVO A COMPILAR ##

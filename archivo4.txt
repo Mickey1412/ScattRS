@@ -1,14 +1,20 @@
 programa hola 
 
-funcion float prueba(int iB){
-    var int iA;
-    iA = 5 * 3;
-    retornar 0.2;
+funcion int func1(){
+    imprimir("hola");
+    retornar 1;
 }
 
 inicio(){
-    var int iC;
-    var float fU;
-    fU = prueba(1, 5);
+    var int iA, iB, iC, iD;
+    var float fA;
+    var int aA[3];
+    var int aB[3];
+    var int aC[3];
+
+    iA = desv(aA, aB);
+
+    
+    
     
 }
