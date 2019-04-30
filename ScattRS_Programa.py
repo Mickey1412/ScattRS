@@ -26,6 +26,7 @@ class Programa():
 		self.numero_cuadruplo = 1
 		self.cubo_semantico = CuboSemantico()
 		self.arreglo_actual = {}
+		self.pila_variables_dimensionadas = []
 		self.memoria = Memoria()
 		self.bandera_retorno = False
 		self.lista_retorno = []

@@ -137,7 +137,7 @@ def p_assign(p):
 
 def p_assign_A1(p):
 	'''
-	assign_A1 : BRACKET_I exp BRACKET_D 
+	assign_A1 : BRACKET_I punto_fondoIni exp punto_fondoFin BRACKET_D 
 		| empty 
 	'''
 	
@@ -248,8 +248,8 @@ def p_arr(p):
 	'''
 	arr : BRACKET_I INT_VALOR punto_pilaOint BRACKET_D punto_identificarDim
 	'''
-	print("cosa: ", p[2])
-	print("pasa por aqui")
+	#print("cosa: ", p[2])
+	#print("pasa por aqui")
 
 def p_term(p):
 	'''
@@ -371,14 +371,14 @@ def p_estadistica_A2(p):
 	'''
 	estadistica_A2 : PAREN_I ID punto_pilaOvar COMA ID punto_pilaOvar PAREN_D 
 	'''
-	print("pasa por estadisticaA2")
+	#print("pasa por estadisticaA2")
 
 def p_estadistica_A3(p):
 	'''
 	estadistica_A3 : PAREN_I ID punto_pilaOvar COMA ID punto_pilaOvar COMA ID punto_pilaOvar PAREN_D 
 	'''
-	print("pasa por estadisticaA3")
-	print(var_program.pila_operando)
+	#print("pasa por estadisticaA3")
+	#print(var_program.pila_operando)
 
 def p_estadistica_A4(p):
 	'''
@@ -497,12 +497,13 @@ def p_punto_addv(p):
 def p_punto_identificarDim(p):
 	'''punto_identificarDim : '''
 	nombre_variable_arr = p[-5]
+	print("nombre variable arreglo: ", nombre_variable_arr)
 	direccion_variable_arr = var_program.pila_operando.pop()
-	print(direccion_variable_arr)
+	#print(direccion_variable_arr)
 	dimension_size = var_program.memoria.get_valor(direccion_variable_arr)
-	print(dimension_size)
+	#print(dimension_size)
 	dimension_tipo = var_program.pila_tipo.pop()
-	print(dimension_tipo)
+	#print(dimension_tipo)
 
 	#verificar la dimension del arreglo
 	if dimension_tipo != 'int':
@@ -519,6 +520,74 @@ def p_punto_identificarDim(p):
 			'limite_inf' : 0,
 			'limite_sup' : dimension_size,
 		}
+
+
+def p_punto_checkIfArreglo(p):
+    '''punto_checkArreglo : '''
+    #Validar si la variable, que se intenta acceder, es un arreglo
+    funcion = var_program.scope_actual
+    #nombre = p[-6]
+    nombre = p[-3]
+    print("pila operandos: ", var_program.pila_operando)
+    #variable_borrada = var_program.pila_operando.pop()
+    #print("pila operandos: ", var_program.pila_operando)
+    variable = var_program.directorio_func.get_funcion_variable(funcion, nombre)
+    print("variable: ", variable)
+    #print("variable borrada: ", variable_borrada)
+    
+    #Validar si la variable existe en el scope actual (funcion)
+    if variable is None:
+        #Checar si la variable existe en el scope global 
+        funcion = var_program.scope_global
+        variable = var_program.directorio_func.get_funcion_variable(funcion, nombre)
+        if variable is None:
+            print("No existe la variable: " + str(nombre))
+            sys.exit()
+    else:
+        if 'limite_sup' in variable:
+            #Guardar el arreglo, para crear cuadruplo mas adelante
+            var_program.pila_variables_dimensionadas.append(variable)
+        else:
+            print("La variable: " + str(nombre) + " no es un arreglo")
+            sys.exit()
+    print("variables: ", var_program.pila_variables_dimensionadas)
+
+#Validar si el indice del arreglo, sea de una dimension correcta
+def p_punto_checkIndexArreglo(p):
+    '''punto_checkIndexArreglo : '''
+    indice_arreglo_direccion = var_program.pila_operando.pop() #regresa la direccion del indice
+    indice_arreglo_tipo = var_program.pila_tipo.pop()
+    nombre_variable = p[-6]
+    variable_arreglo = var_program.pila_variables_dimensionadas.pop()
+    
+    #Checar que el index sea int
+    if indice_arreglo_tipo != 'int':
+        print("El indice del arreglo " + nombre_variable + " debe ser entero (int)")
+        sys.exit()
+    else:
+        cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'VER_ARR', indice_arreglo_direccion, variable_arreglo['limite_inf'] , variable_arreglo['limite_sup'])
+        var_program.lista_cuadruplo.append(cuadrup)
+        var_program.numero_cuadruplo += 1
+        
+        temp_direccion_base = var_program.memoria.pedir_direccion_global('int', variable_arreglo['direccion_memoria'])
+        indice_temp_resultado = var_program.memoria.pedir_direccion_global('int')
+        
+        cuadrup = Cuadruplos(var_program.numero_cuadruplo, '+', temp_direccion_base, indice_arreglo_direccion, indice_temp_resultado)
+        var_program.lista_cuadruplo.append(cuadrup)
+        var_program.numero_cuadruplo += 1
+        
+        # # Stores the index address result int a dictionary to difference it
+        # # from a regular address
+        # result_proxy = {'index_address' : index_address_result}
+        # my_program.operand_stack.append(result_proxy)
+        # my_program.type_stack.append(dimensioned_variable['type'])
+        
+        
+        
+        
+        
+    
+    
 
 #P.N. que agrega una variable dimensionada (arreglo) a la tabla de variables de la funcion actual
 def p_punto_addvarr(p):
@@ -540,6 +609,7 @@ def p_punto_addvarr(p):
 		variable['direccion_memoria'] = direccion_variable
 
 		var_program.directorio_func.agregar_variable_dimensionada(var_program.scope_actual, variable)
+
 def p_void_check(p):
 	'''void_check : '''
 	nombre_funcion = p[-8]
@@ -548,16 +618,7 @@ def p_void_check(p):
 	if funcion_objeto["tipo_retorno"] != 'void':
 		print("Esta funcion no se puede usar como procedimiento")
 		#sys.exit()
-
-#P.N. que crea los cuadruplos para 
-
-# P.N. que identifica el tamaño de los arreglos cuando se declaren
-# def p_punto_declaracion_varr(p):
-#     '''punto_declaracion_var'''
-#     tamano = p[-2]
-#     nombre = p[-4]
     
-
 ##########################  P.N. PARA GENERACION DE CUADRUPLOS ###############################
 
 #P.N. que inserta un operador a la pila de operadores 
@@ -567,7 +628,7 @@ def p_punto_pOper(p):
 	
 #FUNCION que resuelve operaciones de las pilas de operando y operadores, creando su cuadruplo
 def cuadOperaciones(p):
-	resultado_cuad = 'temp'
+	#resultado_cuad = 'temp'
 	#se sacan los operandos de las pilas para el cuadruplo
 	operando_der = var_program.pila_operando.pop()
 	tipo_der = var_program.pila_tipo.pop()
@@ -629,7 +690,7 @@ def p_punto_logico(p):
 def p_punto_pilaOvar(p):
 	'''punto_pilaOvar : '''
 	variable = var_program.directorio_func.get_funcion_variable(var_program.scope_actual, p[-1])
-	print("variable: ", variable)
+	#print("variable: ", variable)
 
 	if variable is None:
 		#Verifica si la varaible existe en el scope global
@@ -687,7 +748,7 @@ def p_punto_pilaOString(p):
 
 def p_punto_pilaOchar(p):
     ''' punto_pilaOchar : '''
-    print("pasa por aqui")
+    #print("pasa por aqui")
     var_program.pila_operando.append(p[-1])
     var_program.pila_tipo.append('char')
 
@@ -707,8 +768,8 @@ def p_punto_cuadRead(p):
 	mensaje_dir = var_program.pila_operando.pop()
 	variable_tipo = var_program.pila_tipo.pop()
  
-	print("mensaje_dir: ", mensaje_dir)
-	print("variable_tipo: ", variable_tipo)
+	#print("mensaje_dir: ", mensaje_dir)
+	#print("variable_tipo: ", variable_tipo)
 
 	#Se obtiene el tipo de variable del que consistira el input de lectura y pide un espacio temporal de memoria para resolverlo
 	# variable_tipo = var_program.pila_tipo[-1]
@@ -1079,13 +1140,13 @@ def p_punto_cuadBernou(p):
 	'''punto_cuadBernou : '''
 	#Se hace pop para sacar los arreglos de la pila de operandos
 	id_variable = p[-7]
-	print("tipo_var: ", id_variable)
+	#print("tipo_var: ", id_variable)
 	variable = var_program.directorio_func.get_funcion_variable(var_program.scope_actual, id_variable)
-	print("variable", variable)
+	#print("variable", variable)
 	tipo_var = variable['tipo']
-	print("tipo de variable: ", tipo_var)
+	#print("tipo de variable: ", tipo_var)
 	temporal = var_program.memoria.pedir_direccion_temporal(tipo_var)
-	print("temporal: ", temporal)
+	#print("temporal: ", temporal)
 	operand1 = var_program.pila_operando.pop()
 	operand2 = var_program.pila_operando.pop()
 	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'BERNOU', operand1, operand2, temporal)
