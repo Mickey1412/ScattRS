@@ -33,6 +33,8 @@ class Memoria():
         return self.memoria_local.pedir_direccion_arreglo(tipo_valor, total_direcciones, valor)
 
     def determinar_tipo_memoria(self, direccion):
+        
+        #print("direccion: ", direccion)
         if (direccion >= self.memoria_global.direccion_inicio and direccion <= self.memoria_global.direccion_final):
             return 'global'
         elif (direccion >= self.memoria_local.direccion_inicio and direccion <= self.memoria_local.direccion_final):

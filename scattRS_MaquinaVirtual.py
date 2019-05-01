@@ -83,11 +83,20 @@ class Maquina_Virtual():
 
             #insertar el operador, operandos (direcciones de memoria) y resultado de los cuadruplos en variables para ejecucion
             accion = instruccion_actual.operador
-            dir_operando_izq = instruccion_actual.operando_izq
-            dir_operando_der = instruccion_actual.operando_der
+            dir_operando_izq = instruccion_actual.operando_Izq
+            dir_operando_der = instruccion_actual.operando_Der
             dir_resultado = instruccion_actual.resultado
 
-            ##obtiene los valores adentro de las direcciones para arrglos
+            #Obtiene los valores adentro de las variables especiales para otorgar las direcciones que tiene el valor de la casilla del arreglo
+            #Cuando operandos izquierdos son una casilla de arreglo
+            if isinstance(dir_operando_izq, dict):
+                dir_operando_izq = memoria_actual.get_valor(dir_operando_izq['direccion_indice'])
+            #Cuando operandos derechos son una casilla de arreglo
+            elif isinstance(dir_operando_der, dict):
+                dir_operando_der = memoria_actual.get_valor(dir_operando_der['direccion_indice'])
+            #Cuando operandos de resultado son una casilla de arreglo
+            elif isinstance(dir_resultado, dict):
+                dir_resultado = memoria_actual.get_valor(dir_resultado['direccion_indice'])
 
             #Lista de condiciones para la ejeecucin de cada  instruccion de acuerdo a sutipo de accion en el cuadruplos 
 
@@ -209,7 +218,6 @@ class Maquina_Virtual():
                 #Se imprime en consola un string del operando izquierdo del cuadruplo
                 print(str(operando_izq))
                 #Se guarda el resultado y se continua al siguiente cuadruplo
-                memoria_actual.editar_valor(dir_resultado, resultado)
                 self.num_instrucciones_actual += 1
             elif accion == 'READ':
                 tipo_variable = dir_operando_izq

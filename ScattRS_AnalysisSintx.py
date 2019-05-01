@@ -3,6 +3,7 @@ import ply.yacc as yacc
 from scattRS_AnalysisLex import tokens
 from scattRS_Programa import Programa
 from scattRS_Cuadruplos import Cuadruplos
+from scattRS_MaquinaVirtual import Maquina_Virtual
 import sys
 
 #variable que toma la clase programa para llamar los procedimientos del directorio de funciones y cuadruplos
@@ -199,7 +200,7 @@ def p_var_cte(p):
 		| FLOAT_VALOR punto_pilaOfloat
 		| TRUE punto_pilaObool
 		| FALSE punto_pilaObool
-		| CHAR_VALOR punto_pilaOchar
+		| CHAR_VALOR punto_pilaOString
 		| proc_call
 	'''
 	# print("exp: " + str(p[1]))
@@ -460,6 +461,11 @@ def p_punto_main(p):
 
 	#agrega la funcion al directorio 
 	var_program.directorio_func.agregar_func(var_program.scope_actual, 'void')
+	#Agregar el numero del cuadruplo al directorio de funciones
+	var_program.directorio_func.set_numero_cuadruplo(var_program.scope_actual, var_program.numero_cuadruplo)
+	#Rellena el cuadruplo GOTO MAIN para hacer el salto inicial de ejecucion
+	cuadrup = var_program.lista_cuadruplo[0]
+	cuadrup.cuadruplo_saltos(var_program.numero_cuadruplo)
 
 #P.N. que agrega varable a la tabla de variables de la funcion actual
 def p_punto_addv(p):
@@ -583,13 +589,6 @@ def p_punto_checkIndexArreglo(p):
         variable_especial = {'direccion_indice' : indice_temp_resultado}
         var_program.pila_operando.append(variable_especial)
         var_program.pila_tipo.append(variable_arreglo['tipo'])
-        
-        
-        
-        
-        
-    
-    
 
 #P.N. que agrega una variable dimensionada (arreglo) a la tabla de variables de la funcion actual
 def p_punto_addvarr(p):
@@ -744,9 +743,18 @@ def p_punto_pilaObool(p):
 	var_program.pila_tipo.append('bool')
  
 def p_punto_pilaOString(p):
-    ''' punto_pilaOString : '''
-    var_program.pila_operando.append(str(p[-1]))
-    var_program.pila_tipo.append('string')  
+	''' punto_pilaOString : '''
+	direccion_constante = var_program.memoria.ver_valor_constante_existe('string', str(p[-1]))
+	print("direccion constante: ",direccion_constante)
+	if direccion_constante is None:
+		direccion_constante = var_program.memoria.pedir_direccion_constante('string', str(p[-1]))
+		print("direccion constante2: ",direccion_constante)
+	
+	var_program.pila_operando.append(direccion_constante)
+	var_program.pila_tipo.append('string')
+
+	#var_program.pila_operando.append(str(p[-1]))
+	#var_program.pila_tipo.append('string')  
 
 def p_punto_pilaOchar(p):
     ''' punto_pilaOchar : '''
@@ -1230,7 +1238,7 @@ def p_punto_cuadScattPend(p):
 parser = yacc.yacc()
 
 # nombre del archivo a compilar
-name = 'archivo4.txt'
+name = 'archivo2.txt'
 
 with open(name, 'r') as myfile:
 	s = myfile.read().replace('\n', '')
@@ -1240,6 +1248,12 @@ parser.parse(s)
 # Imprimir programa
 var_program.directorio_func.print_directorio()
 var_program.print_cuadruplos()
+
+############################### EJECUCION DE MAQUINA VIRTUAL ##############################################
+
+ejecutar_maquinaVirtual = Maquina_Virtual(var_program.memoria, var_program.directorio_func, var_program.lista_cuadruplo)
+ejecutar_maquinaVirtual.ejecutar_maquina()
+
 # Imprimir los parametros de las funciones (comentar el borrado de la lista de parametros para que despliegue algo)
 # var_program.print_temporales_parametros_nombres()
 # var_program.print_temporales_parametros_tipos()

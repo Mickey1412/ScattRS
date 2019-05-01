@@ -1,19 +1,20 @@
 programa hola 
 
-funcion int func1(){
-    imprimir("hola");
-    retornar 1;
-}
-
 inicio(){
-    var int iA, iB, iC, iD;
-    var float fA;
-    var int aA[3];
-    var int aB[3];
-    var int aC[3];
+    var int iA, iB;
+    var int iC[3];
+    var float fC, fD, fE;
 
-    iA = desv(aA, aB);
 
+    iA = 3 + 4 * 5;
+    iB = iA - 3;
+
+    iC[0] = iA;
+    iC[1] = iB;
+    iC[2] = iC[0] - iC[1];
+    imprimir(iC[0]);
+    imprimir(iC[1]);
+    imprimir(iC[2]);
     
     
     

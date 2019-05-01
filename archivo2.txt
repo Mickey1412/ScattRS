@@ -1,19 +1,23 @@
 programa hola 
 
 inicio(){
-    var int iArr[5];
     var int iA, iB, iC;
-    var float fC, fD, fE;
-    var int r, d;
-    var float fU;
+    var float r, d;
 
-    SI (iA < iB) {
-        iC = iA + iC;
-    }
-    
+    iA = 6;
+    iB = 2;
+
+
+
 
     d = (3 - 2) * 34 - 2.5;
     r = (iC - iB) * iA / iB * iB; 
-    fU = fE + fC * fD - fE;
-    
+
+    imprimir(1);
+    imprimir(iC);
+    imprimir(2);
+    imprimir(d);
+    imprimir("hola3");
+    imprimir(r);
+
 }

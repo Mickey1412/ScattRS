@@ -22,15 +22,15 @@ class Segmentos():
         self.float_direccion_inicio = direccion_inicio + self.size_tipo_seg
         self.float_direccion_final = direccion_inicio + self.size_tipo_seg * 2 - 1
         #char
-        self.char_direccion_inicio = direccion_inicio + self.size_tipo_seg * 2
-        self.char_direccion_final = direccion_inicio + self.size_tipo_seg * 3 - 1
+        self.string_direccion_inicio = direccion_inicio + self.size_tipo_seg * 2
+        self.string_direccion_final = direccion_inicio + self.size_tipo_seg * 3 - 1
         #bool
         self.bool_direccion_inicio = direccion_inicio + self.size_tipo_seg * 3
         self.bool_direccion_final = direccion_inicio + self.size_tipo_seg * 4 - 1
     #Construccion de los tipos de segmento
         self.int_segmento = TipoSegmentoMem('int', self.int_direccion_inicio, self.int_direccion_final)
         self.float_segmento = TipoSegmentoMem('float', self.float_direccion_inicio, self.float_direccion_final)
-        self.char_segmento = TipoSegmentoMem('char', self.char_direccion_inicio, self.char_direccion_final)
+        self.string_segmento = TipoSegmentoMem('string', self.string_direccion_inicio, self.string_direccion_final)
         self.bool_segmento = TipoSegmentoMem('bool', self.bool_direccion_inicio, self.bool_direccion_final)
 
     #Procesi que pide la direccion de memoria dependiendo del tipo de valor
@@ -44,10 +44,10 @@ class Segmentos():
             if valor is None:
                 valor = 0.0
             return self.float_segmento.pedir_direccion(valor)
-        elif tipo_segmento == 'char':
+        elif tipo_segmento == 'string':
             if valor is None:
                 valor = ''
-            return self.char_segmento.pedir_direccion(valor)
+            return self.string_segmento.pedir_direccion(valor)
         elif tipo_segmento == 'bool':
             if valor is None:
                 valor = False
@@ -63,10 +63,10 @@ class Segmentos():
             if valor is None:
                 valor = 0.0
             return self.float_segmento.pedir_direccion_arreglo(total_direcciones, valor)
-        elif tipo_segmento == 'char':
+        elif tipo_segmento == 'string':
             if valor is None:
                 valor = ''
-            return self.char_segmento.pedir_direccion_arreglo(total_direcciones, valor)
+            return self.string_segmento.pedir_direccion_arreglo(total_direcciones, valor)
         elif tipo_segmento == 'bool':
             if valor is None:
                 valor = False
@@ -79,8 +79,8 @@ class Segmentos():
             return self.int_segmento.get_valor(direccion)
         elif tipo_segmento == 'float':
             return self.float_segmento.get_valor(direccion)
-        elif tipo_segmento == 'char':
-            return self.char_segmento.get_valor(direccion)
+        elif tipo_segmento == 'string':
+            return self.string_segmento.get_valor(direccion)
         elif tipo_segmento == 'bool':
             return self.bool_segmento.get_valor(direccion)
 
@@ -91,8 +91,8 @@ class Segmentos():
             return self.int_segmento.editar_valor(direccion, valor)
         elif tipo_segmento == 'float':
             return self.float_segmento.editar_valor(direccion, valor)
-        elif tipo_segmento == 'char':
-            return self.char_segmento.editar_valor(direccion, valor)
+        elif tipo_segmento == 'string':
+            return self.string_segmento.editar_valor(direccion, valor)
         elif tipo_segmento == 'bool':
             return self.bool_segmento.editar_valor(direccion, valor)
 
@@ -101,15 +101,15 @@ class Segmentos():
             return self.int_segmento.ver_valor_existe(valor)
         elif tipo_segmento == 'float':
             return self.float_segmento.ver_valor_existe(valor)
-        elif tipo_segmento == 'char':
-            return self.char_segmento.ver_valor_existe(valor)
+        elif tipo_segmento == 'string':
+            return self.string_segmento.ver_valor_existe(valor)
         elif tipo_segmento == 'bool':
             return self.bool_segmento.ver_valor_existe(valor)
 
     def borron_y_cuenta_nueva(self):
         self.int_segmento.borron_y_cuenta_nueva()
         self.float_segmento.borron_y_cuenta_nueva()
-        self.char_segmento.borron_y_cuenta_nueva()
+        self.string_segmento.borron_y_cuenta_nueva()
         self.bool_segmento.borron_y_cuenta_nueva()
 
     
@@ -119,8 +119,8 @@ class Segmentos():
             return 'int'
         elif (direccion >= self.float_direccion_inicio and direccion <= self.float_direccion_final):
             return 'float'
-        elif (direccion >= self.char_direccion_inicio and direccion <= self.char_direccion_final):
-            return 'char'
+        elif (direccion >= self.string_direccion_inicio and direccion <= self.string_direccion_final):
+            return 'string'
         elif (direccion >= self.bool_direccion_inicio and direccion <= self.bool_direccion_final):
             return 'bool'
         else:
