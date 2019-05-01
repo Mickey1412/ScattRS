@@ -137,7 +137,7 @@ def p_assign(p):
 
 def p_assign_A1(p):
 	'''
-	assign_A1 : BRACKET_I punto_fondoIni exp punto_fondoFin BRACKET_D 
+	assign_A1 : BRACKET_I punto_checkIfArreglo punto_fondoIni exp punto_checkIndexArreglo punto_fondoFin BRACKET_D 
 		| empty 
 	'''
 	
@@ -523,16 +523,18 @@ def p_punto_identificarDim(p):
 
 
 def p_punto_checkIfArreglo(p):
-    '''punto_checkArreglo : '''
+    '''punto_checkIfArreglo : '''
     #Validar si la variable, que se intenta acceder, es un arreglo
     funcion = var_program.scope_actual
     #nombre = p[-6]
     nombre = p[-3]
-    print("pila operandos: ", var_program.pila_operando)
+    # print("pila operandos: ", var_program.pila_operando)
+    # print("funcion: ", funcion)
+    # print("nombre: ", nombre)
     #variable_borrada = var_program.pila_operando.pop()
     #print("pila operandos: ", var_program.pila_operando)
     variable = var_program.directorio_func.get_funcion_variable(funcion, nombre)
-    print("variable: ", variable)
+    # print("variable: ", variable)
     #print("variable borrada: ", variable_borrada)
     
     #Validar si la variable existe en el scope actual (funcion)
@@ -576,11 +578,11 @@ def p_punto_checkIndexArreglo(p):
         var_program.lista_cuadruplo.append(cuadrup)
         var_program.numero_cuadruplo += 1
         
-        # # Stores the index address result int a dictionary to difference it
-        # # from a regular address
-        # result_proxy = {'index_address' : index_address_result}
-        # my_program.operand_stack.append(result_proxy)
-        # my_program.type_stack.append(dimensioned_variable['type'])
+        # Stores the index address result int a dictionary to difference it
+        # from a regular address
+        variable_especial = {'direccion_indice' : indice_temp_resultado}
+        var_program.pila_operando.append(variable_especial)
+        var_program.pila_tipo.append(variable_arreglo['tipo'])
         
         
         
