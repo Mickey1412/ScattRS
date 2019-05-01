@@ -341,7 +341,7 @@ def p_bloque_A1(p):
 
 def p_estadistica(p):
 	'''
-	estadistica : PROM estadistica_A1 
+	estadistica : PROM estadistica_A1 punto_cuadProm
 		| MODA estadistica_A1 punto_cuadModa
 		| MEDIAN estadistica_A1 punto_cuadMedian
 		| SUM estadistica_A1 punto_cuadSum
@@ -989,10 +989,31 @@ def p_punto_gosub(p):
 		print("Error: Mismatch en el numero de parametros")
 		sys.exit()
 
-#P.N. que al leer el RETURN  marca la bandera_retorno como TRUE
+#P.N. que al leer el RETURN  marca la bandera_retorno como TRUE y genera el cuadruplo "RETURN"
 def p_punto_returnTrue(p):
 	'''punto_returnTrue : '''
 	var_program.bandera_retorno = True
+
+	#Se obtiene el operando de retorno y la la funcion que hizo la llamada
+	operando = var_program.pila_operando.pop()
+	tipo_operando = var_program.pila_tipo.pop()
+	funcion = var_program.directorio_func.get_f(var_program.scope_actual)
+	tipo_funcion = funcion['tipo_retorno']
+	dir_funcion_retorno = funcion['direccion_retorno']
+	#Validacion de que los tipos de variables concuerden
+	if tipo_funcion != tipo_operando:
+		print("ERROR: El tipo de retorno de la funcion que se llama no concuerda")
+		sys.exit()
+
+	#Se genera el cuadruplo de retorno 
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'RETURN', operando, None, dir_funcion_retorno)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
+	#General cuadruplo GOTO para el regreso al cuadruplo de donde se llamo la funcion
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'GOTO', None, None, None)
+	var_program.lista_retorno.append(var_program.numero_cuadruplo)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
 
 #P.N. que agrega el resultado producido por la llamada de funcion a la pila de operandos y crea su cuadruplo de asignacion
 def p_punto_funcCallR(p):
@@ -1015,8 +1036,24 @@ def p_punto_funcCallR(p):
 ##################################################### P.N. que generan los cuadruplos de funciones especiales #################################################
 
 #P.N. que crea una direccion temporal para las funciones especiales y mete la direccion a la pila de oprenados
-#def p_punto_agregarEspecial(p):
-#	'''punto_agregarEspecial : '''
+#P.N. para el cuadruplo de la funcion: PROM
+def p_punto_cuadProm(p):
+	'''punto_cuadProm : '''
+	#Se hace pop para sacar el arreglo de la pila de operandos
+	id_variable = p[-7]
+	#print("tipo_var: ", id_variable)
+	variable = var_program.directorio_func.get_funcion_variable(var_program.scope_actual, id_variable)
+	#print("variable", variable)
+	tipo_var = variable['tipo']
+	#print("tipo de variable: ", tipo_var)
+	temporal = var_program.memoria.pedir_direccion_temporal(tipo_var)
+	#print("temporal: ", temporal)
+	operand = var_program.pila_operando.pop()
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'PROM', operand, None, temporal)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
+	var_program.pila_operando.append(temporal)
+	var_program.pila_tipo.append(tipo_var)
 
 
 #P.N. para el cuadruplo de la funcion: MODA
@@ -1156,6 +1193,16 @@ def p_punto_cuadBernou(p):
 	var_program.numero_cuadruplo += 1
 	var_program.pila_operando.append(temporal)
 	var_program.pila_tipo.append(tipo_var)
+
+#P.N. para el cuadruplo de la funcion: GRAPH_BAR sin Pendiente
+def p_punto_cuadBarra(p):
+	'''punto_cuadBarra : '''
+	#Se hace pop para sacar los arreglos de la pila de operandos
+	operand1 = var_program.pila_operando.pop()
+	operand2 = var_program.pila_operando.pop()
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'BAR', operand2, operand1, None)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
 
 #P.N. para el cuadruplo de la funcion: GRAPH_SCATTER sin Pendiente
 def p_punto_cuadScatt(p):
