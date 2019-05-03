@@ -86,6 +86,7 @@ class Maquina_Virtual():
             dir_operando_izq = instruccion_actual.operando_Izq
             dir_operando_der = instruccion_actual.operando_Der
             dir_resultado = instruccion_actual.resultado
+            # print("Accion: ", accion)
 
             #Obtiene los valores adentro de las variables especiales para otorgar las direcciones que tiene el valor de la casilla del arreglo
             #Cuando operandos izquierdos son una casilla de arreglo
@@ -197,7 +198,7 @@ class Maquina_Virtual():
                 #Se guarda el resultado y se continua al siguiente cuadruplo
                 memoria_actual.editar_valor(dir_resultado, resultado)
                 self.num_instrucciones_actual += 1
-            elif accion == 'AND':
+            elif accion == 'Y':
                 operando_izq = memoria_actual.get_valor(dir_operando_izq)
                 operando_der = memoria_actual.get_valor(dir_operando_der)
                 #Se realiza la operacion logica AND con los valores de los operandos
@@ -205,7 +206,7 @@ class Maquina_Virtual():
                 #Se guarda el resultado y se continua al siguiente cuadruplo
                 memoria_actual.editar_valor(dir_resultado, resultado)
                 self.num_instrucciones_actual += 1
-            elif accion == 'OR':
+            elif accion == 'O':
                 operando_izq = memoria_actual.get_valor(dir_operando_izq)
                 operando_der = memoria_actual.get_valor(dir_operando_der)
                 #Se realiza la operacion logica OR con los valores de los operandos

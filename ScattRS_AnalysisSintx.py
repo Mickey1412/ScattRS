@@ -657,7 +657,7 @@ def cuadOperaciones(p):
 	else:
 		#Si la operacion es entre 2 tipos de variables invalidas
 		print('Mismatch de tipos de operandos')
-		#sys.exit()
+		sys.exit()
 
 #P.N. que llama la funcion cuadOperaciones para resolver operaciones de "factor"
 def p_punto_factor(p):
@@ -684,7 +684,7 @@ def p_punto_relacion(p):
 def p_punto_logico(p):
 	'''punto_logico : '''
 	if len(var_program.pila_operador) > 0 and len(var_program.pila_operando) > 1:
-		if var_program.pila_operador[-1] == 'AND' or var_program.pila_operador[-1] == 'OR':
+		if var_program.pila_operador[-1] == 'Y' or var_program.pila_operador[-1] == 'O':
 			cuadOperaciones(p)
 
 #P.N. que inserta una variable a la pila de operandos
@@ -745,10 +745,10 @@ def p_punto_pilaObool(p):
 def p_punto_pilaOString(p):
 	''' punto_pilaOString : '''
 	direccion_constante = var_program.memoria.ver_valor_constante_existe('string', str(p[-1]))
-	print("direccion constante: ",direccion_constante)
+	#print("direccion constante: ",direccion_constante)
 	if direccion_constante is None:
 		direccion_constante = var_program.memoria.pedir_direccion_constante('string', str(p[-1]))
-		print("direccion constante2: ",direccion_constante)
+		#print("direccion constante2: ",direccion_constante)
 	
 	var_program.pila_operando.append(direccion_constante)
 	var_program.pila_tipo.append('string')
@@ -821,8 +821,8 @@ def p_punto_cuadAssign(p):
 			var_program.numero_cuadruplo += 1
 		else:
 			# print('Mismatch de operandos en: {0}'.format(p.lexer.lineno))
-   			print('Mismatch de operandos en: {0}'.format(p.lexer.lineno))
-			#sys.exit()
+			print('Mismatch de operandos en: {0}'.format(p.lexer.lineno))
+			sys.exit()
 
 ################################################### P.N. para cuadruplos de ciclos y condicionales ###############################################
 
@@ -833,10 +833,11 @@ def p_punto_crearGotoF(p):
     #verificar que el resultado de la condicion sea booleano
     if tipo_resultado != 'bool':
         print('Mismatch de tipo en operacion')
+        sys.exit()
     else:
         #Crear cuadruplo GotoF
         resultado = var_program.pila_operando.pop()
-        cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'GotoF', resultado, None, None)
+        cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'GOTOF', resultado, None, None)
         var_program.lista_cuadruplo.append(cuadrup)
         #guardar numero de cuadruplo GotoF en pila de saltos para terminar despues
         var_program.pila_saltos.append(var_program.numero_cuadruplo - 1)
@@ -861,7 +862,7 @@ def p_punto_fillGotoF(p):
 def p_punto_else(p):
 	'''punto_else : '''
 	#Se crea el cuadruplo GOTO y se agrega a la lista de cuadruplos
-	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'Goto', None, None, None)
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'GOTO', None, None, None)
 	var_program.lista_cuadruplo.append(cuadrup)
 
 	#Se busca el numerodel cuadruplo GotoF para llenar
@@ -1243,7 +1244,12 @@ name = 'archivo2.txt'
 with open(name, 'r') as myfile:
 	s = myfile.read().replace('\n', '')
 print("Nombre del archivo de prueba: " + name + "\n")
-parser.parse(s)
+
+try:
+	parser.parse(s)
+except:
+     print("No compilo en el parser")
+     sys.exit()
 
 # Imprimir programa
 var_program.directorio_func.print_directorio()
@@ -1252,7 +1258,12 @@ var_program.print_cuadruplos()
 ############################### EJECUCION DE MAQUINA VIRTUAL ##############################################
 
 ejecutar_maquinaVirtual = Maquina_Virtual(var_program.memoria, var_program.directorio_func, var_program.lista_cuadruplo)
-ejecutar_maquinaVirtual.ejecutar_maquina()
+
+try:
+    ejecutar_maquinaVirtual.ejecutar_maquina()
+except:
+    print("No compilo en la maquina virtual")
+    sys.exit()
 
 # Imprimir los parametros de las funciones (comentar el borrado de la lista de parametros para que despliegue algo)
 # var_program.print_temporales_parametros_nombres()
