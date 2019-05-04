@@ -17,24 +17,48 @@ class Maquina_Virtual():
         self.num_instrucciones_actual = 0
 
     def direccion_local(self, llamada_funcion):
-        for n in range(llamada_funcion['funcion']['num_variables_local']['int']):
-            llamada_funcion['memoria'].direccion_local('int')
-        for n in range(llamada_funcion['funcion']['num_variables_local']['float']):
-            llamada_funcion['memoria'].direccion_local('float')
-        for n in range(llamada_funcion['funcion']['num_variables_local']['char']):
-            llamada_funcion['memoria'].direccion_local('char')
-        for n in range(llamada_funcion['funcion']['num_variables_local']['bool']):
-            llamada_funcion['memoria'].direccion_local('bool')
+        # print("pasa por aqui")
+        # print(llamada_funcion, "\n")
+        # variable = llamada_funcion['funcion']['num_de_variables_locales']['int']
+        # try:
+        #     variable = llamada_funcion['funcion']['num_de_variables_locales']['int']
+        # except:
+        #     print("no jala esto")
+        # print("cantidad de enteros: ", variable)
+        for n in range(llamada_funcion['funcion']['num_de_variables_locales']['int']):
+            llamada_funcion['memoria'].pedir_direccion_local('int')
+            # try:
+            #     llamada_funcion['memoria'].pedir_direccion_local('int')
+            # except:
+            #     print("no jalo local int")
+        for n in range(llamada_funcion['funcion']['num_de_variables_locales']['float']):
+            llamada_funcion['memoria'].pedir_direccion_local('float')
+            # try:
+            #     llamada_funcion['memoria'].pedir_direccion_local('float')
+            # except:
+            #     print("no jalo local float")
+        for n in range(llamada_funcion['funcion']['num_de_variables_locales']['string']):
+            llamada_funcion['memoria'].pedir_direccion_local('string')
+            # try:
+            #     llamada_funcion['memoria'].pedir_direccion_local('string')
+            # except:
+            #     print("no jalo local string")
+        for n in range(llamada_funcion['funcion']['num_de_variables_locales']['bool']):
+            llamada_funcion['memoria'].pedir_direccion_local('bool')
+            # try:
+            #     llamada_funcion['memoria'].pedir_direccion_local('bool')
+            # except:
+            #     print("no jalo local bool")
 
     def direccion_temporal(self, llamada_funcion):
-        for n in range(llamada_funcion['funcion']['num_variables_local']['int']):
-            llamada_funcion['memoria'].direccion_temporal('int')
-        for n in range(llamada_funcion['funcion']['num_variables_local']['float']):
-            llamada_funcion['memoria'].direccion_temporal('float')
-        for n in range(llamada_funcion['funcion']['num_variables_local']['char']):
-            llamada_funcion['memoria'].direccion_temporal('char')
-        for n in range(llamada_funcion['funcion']['num_variables_local']['bool']):
-            llamada_funcion['memoria'].direccion_temporal('bool')
+        for n in range(llamada_funcion['funcion']['num_de_variables_temporales']['int']):
+            llamada_funcion['memoria'].pedir_direccion_temporal('int')
+        for n in range(llamada_funcion['funcion']['num_de_variables_temporales']['float']):
+            llamada_funcion['memoria'].pedir_direccion_temporal('float')
+        for n in range(llamada_funcion['funcion']['num_de_variables_temporales']['string']):
+            llamada_funcion['memoria'].pedir_direccion_temporal('string')
+        for n in range(llamada_funcion['funcion']['num_de_variables_temporales']['bool']):
+            llamada_funcion['memoria'].pedir_direccion_temporal('bool')
 
     def get_tipo_input(self, valor):
         try:
@@ -43,24 +67,26 @@ class Maquina_Virtual():
             return str
 
     def set_tipo_input(self, valor):
-        if self.get_tipo_input(valor) is int:
-            return int(valor)
-        elif self.get_tipo_input(valor) is float:
-            return float(valor)
-        elif self.get_tipo_input(valor) is str:
-            return str(valor)
-        elif self.get_tipo_input(valor) is bool:
+        if valor.isdigit():
+            if "." in valor:
+                return float(valor)
+            else:
+                return int(valor)
+        elif valor == "verdadero" or valor == "falso":
             return bool(valor)
+        else:
+            return str(valor)
 
     def get_tipo_string(self, valor):
-        if self.get_tipo_input(valor) is int:
-            return 'int'
-        elif self.get_tipo_input(valor) is float:
-            return 'float'
-        elif self.get_tipo_input(valor) is str:
-            return 'char'
-        elif self.get_tipo_input(valor) is bool:
+        if valor.isdigit():
+            if "." in valor:
+                return 'float'
+            else:
+                return 'int'
+        elif valor == "verdadero" or valor == "falso":
             return 'bool'
+        else:
+            return 'string'
 
     #Funcion principal de la maquina virtual que ejecuta las instrucciones de codigo intermedio
     def ejecutar_maquina(self):
@@ -221,13 +247,20 @@ class Maquina_Virtual():
                 #Se guarda el resultado y se continua al siguiente cuadruplo
                 self.num_instrucciones_actual += 1
             elif accion == 'READ':
-                tipo_variable = dir_operando_izq
+                variable = dir_resultado
+                variable_tipo = dir_operando_izq
                 valor_input = input()
                 tipo_valor_input = self.get_tipo_string(valor_input)
+                # try:
+                #     tipo_valor_input = self.get_tipo_string(valor_input)
+                # except:
+                #     print("Marco error en el get tipo string")
+                
+                # print("tipo_valor_input: ", tipo_valor_input)
                 valor_input = self.set_tipo_input(valor_input)
-
-                if tipo_valor_input == tipo_variable:
-                    memoria_actual.editar_valor(dir_resultado, valor_input)
+                
+                if tipo_valor_input == variable_tipo:
+                    memoria_actual.editar_valor(variable, valor_input)
                 else:
                     print("El input que se escribio no es correcto para el tipo de variable")
                     sys.exit()
@@ -254,11 +287,20 @@ class Maquina_Virtual():
             elif accion == 'ERA':
                 #Se busca la funcion en el directorio de funciones y crea su segmento de memoria para sus variables locales y temporales
                 funcion_llamada['funcion'] = self.directorio_func.get_f(dir_operando_izq)
+                # print("funcion llamada: ", funcion_llamada)
                 funcion_llamada['memoria'] = Memoria()
                 parametro_posicion = 0
                 #Se corre la funcion para pedir espacio para direcciones locales y temporales de la funcion que se llama
-                self.direccion_local(funcion_llamada)
-                self.direccion_temporal(funcion_llamada)
+                try:
+                    self.direccion_local(funcion_llamada)
+                except:
+                    print("No jalo direccion local")
+                
+                try:
+                    self.direccion_temporal(funcion_llamada)
+                except:
+                    print("No jalo direccion temporal")
+                # self.direccion_temporal(funcion_llamada)
                 self.num_instrucciones_actual += 1
             elif accion == 'PARAM':
                 #Se obtiene el valor de los parametros y la direccion de memoria deonde se van a guardar

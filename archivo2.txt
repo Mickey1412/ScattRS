@@ -1,10 +1,28 @@
 programa hola 
 
+funcion void UNO()
+{
+    var int iA, iB, iC;
+    iA = 5 + 2;
+    iB = 2;
+    iC = iA * iB;
+
+    imprimir(iC);
+
+}
+
+funcion void DOS(int param1, float param2)
+{
+    param1 = param1 + 9;
+    param2 = param2 * 3;
+    imprimir(param1);
+    imprimir(param2);
+}
+
 inicio(){
     var int iA, iB, iC, factorial, num;
     var float r, d;
     var bool crit1, crit2;
-
 
     iA = 6;
     iB = 1;
@@ -13,11 +31,8 @@ inicio(){
     factorial = 1;
     num = 5;
 
-
-
     d = ((3 - 2)) * 34 - 2.5;
     r = (iC - iB) * iA / iB * iB; 
-
 
     SI ((crit1) O (crit2)) 
     {
@@ -43,7 +58,7 @@ inicio(){
     first = 0;
     second = 1;
     imprimir(first);
-    mientras(i < 100){
+    mientras(i < 10){
 
         imprimir(second);
         third = second + first;
@@ -52,6 +67,22 @@ inicio(){
         i = i + 1;
     }
 
+    imprimir("iA es igual a ");
+    imprimir(iA);
+    imprimir("read");
+    leer(iA);
+    imprimir("iA es igual a ");
+    imprimir(iA);
 
-
+    imprimir("llamada a funcion UNO");
+    UNO();
+    imprimir("Salio de la llamada UNO");
+    
+    imprimir("entero a mandar");
+    imprimir(iA);
+    imprimir("float a mandar");
+    imprimir(r);
+    imprimir("llamada a funcion DOS");
+    DOS(iA, r);
+    imprimir("Salio de la llamada DOS");
 }

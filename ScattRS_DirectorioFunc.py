@@ -27,13 +27,13 @@ class DireccionFunc():
         'num_de_variables_locales' : {
             'int' : 0,
             'float' : 0,
-            'char' : 0,
+            'string' : 0,
             'bool' : 0
         },
         'num_de_variables_temporales' : {
             'int' : 0,
             'float' : 0,
-            'char' : 0,
+            'string' : 0,
             'bool' : 0
         }
     }

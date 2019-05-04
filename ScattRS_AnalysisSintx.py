@@ -395,7 +395,7 @@ def p_return(p):
 
 def p_readf(p):
 	'''
-	readf : READ PAREN_I expression PAREN_D punto_cuadRead SEMICOLON 
+	readf : READ PAREN_I ID punto_pilaOvar PAREN_D punto_cuadRead SEMICOLON 
 	'''
 	# print("Si se pudo read")
 
@@ -690,6 +690,8 @@ def p_punto_logico(p):
 #P.N. que inserta una variable a la pila de operandos
 def p_punto_pilaOvar(p):
 	'''punto_pilaOvar : '''
+	# print("Scope: ", var_program.scope_actual)
+	# print("Variable: ", p[-1])
 	variable = var_program.directorio_func.get_funcion_variable(var_program.scope_actual, p[-1])
 	#print("variable: ", variable)
 
@@ -775,7 +777,7 @@ def p_punto_fondoFin(p):
 #P.N. que crea un cuadruplo de lectura (read)
 def p_punto_cuadRead(p):
 	'''punto_cuadRead : '''
-	mensaje_dir = var_program.pila_operando.pop()
+	variable = var_program.pila_operando.pop()
 	variable_tipo = var_program.pila_tipo.pop()
  
 	#print("mensaje_dir: ", mensaje_dir)
@@ -785,9 +787,9 @@ def p_punto_cuadRead(p):
 	# variable_tipo = var_program.pila_tipo[-1]
 	#agregar a memoria
 
-	var_program.pila_tipo.append(variable_tipo)
+	# var_program.pila_tipo.append(variable_tipo)
 
-	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'READ', variable_tipo, None ,mensaje_dir)
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'READ', variable_tipo, None ,variable)
 	var_program.lista_cuadruplo.append(cuadrup)
 	var_program.numero_cuadruplo += 1
 
