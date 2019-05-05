@@ -1,5 +1,5 @@
 # ScattRS
-Poryecto Final de Compiladores
+Proyecto Final de Compiladores
 
 El propósito de este proyecto es desarrollar un compilador para un lenguaje de programación imperativo enfocado a la enseñanza de probabilidad y estadística a nivel preparatoria en adelante, usando los fundamentos básicos de programación. El lenguaje les permitirá realizar operaciones sencillas, producir ecuaciones y desplegarlas de manera gráfica.
 
