@@ -1,0 +1,43 @@
+programa hola 
+
+funcion int fib(int n){
+    
+    SI(n < 0){
+        imprimir("Incorrect input");
+        retornar n;
+    }
+    SI_NO{
+        SI( n == 0){
+            retornar 0;
+        }
+        SI_NO{
+            SI( n == 1){
+                retornar 1;
+            }
+            SI_NO{
+                retornar (fib(n - 1) + fib(n - 2));
+            }
+        }
+    }
+    
+}
+
+funcion int fact(int n){
+    SI(n > 1){
+        n = n * fact(n - 1);
+    }
+    retornar n;
+}
+
+inicio(){
+    var int iA, iB, iResultado1, iResultado2;
+    iA = 9;
+    iB = 5;
+    
+    iResultado2 = fib(iA);
+    imprimir("iResultado2");
+    imprimir(iResultado2);
+    imprimir("Factorial Recursivo");
+    iResultado1 = fact(iB);
+    imprimir(iResultado1);
+}

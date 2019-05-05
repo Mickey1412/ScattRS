@@ -1,6 +1,22 @@
 programa hola 
-inicio(){
-    SI(1 < 3){
-        
+
+funcion int recursividad(int p1){
+    SI(p1 > 10){
+        retornar p1;
     }
+    p1 = p1 + recursividad(p1 + 1);
+}
+
+inicio(){
+    var int iA, iB, iC, iResultado;
+    var int arrA[3];
+    iB = 0;
+    iC = 1;
+    imprimir("valor 0 del arreglo ");
+    arrA[0] = 2;
+    imprimir(arrA[0]);
+    iA = 5;
+    iResultado = recursividad(iA);
+    imprimir("iResultado");
+    imprimir(iResultado);
 }

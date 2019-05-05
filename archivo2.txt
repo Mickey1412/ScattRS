@@ -1,18 +1,99 @@
 programa hola 
 
-inicio(){
+funcion void UNO()
+{
     var int iA, iB, iC;
-    var float fC, fD, fE;
-    var int r, d;
-    var float fU;
+    iA = 5 + 2;
+    iB = 2;
+    iC = iA * iB;
 
-    SI (iA < iB) {
-        iC = iA + iC;
+    imprimir(iC);
+
+}
+
+funcion void DOS(int param1, float param2)
+{
+    imprimir("param1 antes de operacion");
+    imprimir(param1);
+    param1 = param1 + 9;
+    imprimir("param2 antes de operacion");
+    imprimir(param2);
+    param2 = param2 * 3;
+    imprimir("param1");
+    imprimir(param1);
+    imprimir("param2");
+    imprimir(param2);
+}
+
+inicio(){
+    var int iA, iB, iC, factorial, num;
+    var float r, d;
+    var bool crit1, crit2;
+
+    iA = 6;
+    iB = 1;
+    crit1 = (r == r);
+    crit2 = (r != r);
+    factorial = 1;
+    num = 5;
+
+    d = ((3 - 2)) * 34 - 2.5;
+    imprimir(iC);
+    imprimir(iB);
+    imprimir(iA);
+    r = (iC - iB) * iA / iB * 0.33;
+    imprimir("r es igual a");
+    imprimir(r); 
+
+    SI ((crit1) O (crit2)) 
+    {
+        imprimir("Funciona el O");
+        imprimir(r != r);
+        imprimir(r == r);
     }
-    
+    SI_NO
+    {
+        imprimir("entro al ELSE");
+    }
 
-    d = (3 - 2) * 34 - 2.5;
-    r = (iC - iB) * iA / iB * iB; 
-    fU = fE + fC * fD - fE;
+    mientras(num > 1)
+    {
+        factorial = factorial * num;
+        num = num - 1;
+    }
+    imprimir("factorial iterativo ");
+    imprimir(factorial);
+
+    imprimir("Fibbonacci iterativo ");
+    var int first, second, third, i;
+    first = 0;
+    second = 1;
+    imprimir(first);
+    mientras(i < 10){
+
+        imprimir(second);
+        third = second + first;
+        first = second;
+        second = third;
+        i = i + 1;
+    }
+
+    imprimir("iA es igual a ");
+    imprimir(iA);
+    imprimir("read");
+    leer(iA);
+    imprimir("iA es igual a ");
+    imprimir(iA);
+
+    imprimir("llamada a funcion UNO");
+    UNO();
+    imprimir("Salio de la llamada UNO");
     
+    imprimir("entero a mandar iA");
+    imprimir(iA);
+    imprimir("float a mandar r");
+    imprimir(r);
+    imprimir("llamada a funcion DOS");
+    DOS(iA, r);
+    imprimir("Salio de la llamada DOS");
 }

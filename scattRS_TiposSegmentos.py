@@ -31,6 +31,7 @@ class TipoSegmentoMem():
             return direccion
         else:
             print("No hay espacio de memoria disponible")
+            sys.exit()
     
     #Procedimiento que determina si el espacio de memoria no esta lleno
     def espacio_Disponible(self, total_direcciones = 0):
@@ -89,5 +90,7 @@ class TipoSegmentoMem():
         else:
             print("No hay espacio de memoria disponible")
 
+    def print_memoria(self):
+        print(self.segmento)
 
 

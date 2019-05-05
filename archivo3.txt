@@ -1,16 +1,34 @@
 programa hola 
-param int cosa; 
-funcion void prueba(int p1, float p2){ 
-	param int iA;
-	param bool bflag;
-	bflag = verdadero;
-	param int iprueba[3];
-    iprueba[0] = 1; iprueba[1] = 1;
-    param int iprueba2[3] = {1, 2, 3},iprueba2[3] = {1, 2, 3},iprueba2[3] = {1, 2, 3}, iprueba2[3] , asdf;
-    SI(hola == verdadero){
+var int cosa; 
 
+funcion float test(float p3) {
+	p3 = p3 * 2;
+	retornar p3;
+}
+
+funcion int prueba(int p1, float p2){ 
+	var int iA;
+	var float fB;
+	iA = 1;
+
+	p2 = 1 + test(p2);
+	p1 = p1 + iA + p2;
+	
+	SI(p2 > 5){
+		retornar(p1 * 2);
 	}
+
+	imprimir("p2");
+	imprimir(p2);
+	retornar (p1 + 1);
+
 } 
 inicio(){
-	param int iB;
+	var int iB, iResultado;
+	var float iC;
+	iB = 1; 
+	iC = 3.5;
+	iResultado = prueba(iB, iC);
+	imprimir("iResultado");
+	imprimir(iResultado);
 }
