@@ -13,9 +13,15 @@ funcion void UNO()
 
 funcion void DOS(int param1, float param2)
 {
-    param1 = param1 + 9;
-    param2 = param2 * 3;
+    imprimir("param1 antes de operacion");
     imprimir(param1);
+    param1 = param1 + 9;
+    imprimir("param2 antes de operacion");
+    imprimir(param2);
+    param2 = param2 * 3;
+    imprimir("param1");
+    imprimir(param1);
+    imprimir("param2");
     imprimir(param2);
 }
 
@@ -32,7 +38,12 @@ inicio(){
     num = 5;
 
     d = ((3 - 2)) * 34 - 2.5;
-    r = (iC - iB) * iA / iB * iB; 
+    imprimir(iC);
+    imprimir(iB);
+    imprimir(iA);
+    r = (iC - iB) * iA / iB * 0.33;
+    imprimir("r es igual a");
+    imprimir(r); 
 
     SI ((crit1) O (crit2)) 
     {
@@ -78,9 +89,9 @@ inicio(){
     UNO();
     imprimir("Salio de la llamada UNO");
     
-    imprimir("entero a mandar");
+    imprimir("entero a mandar iA");
     imprimir(iA);
-    imprimir("float a mandar");
+    imprimir("float a mandar r");
     imprimir(r);
     imprimir("llamada a funcion DOS");
     DOS(iA, r);

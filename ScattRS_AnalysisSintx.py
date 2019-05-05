@@ -208,7 +208,7 @@ def p_var_cte(p):
 
 def p_var_cte_A1(p):
 	'''
-	var_cte_A1 : BRACKET_I exp BRACKET_D 
+	var_cte_A1 : BRACKET_I punto_checkIfArreglo punto_fondoIni exp punto_checkIndexArreglo punto_fondoFin BRACKET_D 
 		| empty
 	'''
 
@@ -427,6 +427,9 @@ def p_punto_addf(p):
 	var_program.scope_actual = p[-4]
 	tipofuncion = p[-5]
 	direcciones_variables = []
+
+	var_program.parametros_temporales_nombres.reverse()
+	var_program.parametros_temporales_tipos.reverse()
 	
  	#Agrega la funcion al directorio 
 	var_program.directorio_func.agregar_func(var_program.scope_actual, tipofuncion)
@@ -478,6 +481,7 @@ def p_punto_addv(p):
 	#print("variables temporales nombre: ",var_program.variables_temporales)
 	#print("variable tipo: ",var_program.variables_temporales_tipo)
 	#func_nombre = var_program.scope_actual
+	
 	for variable in var_program.variables_temporales:
 		variable_declarada = var_program.directorio_func.verificar_variable_existe(var_program.scope_actual, variable)
 		#print(variable_declarada)
@@ -534,10 +538,11 @@ def p_punto_checkIfArreglo(p):
     funcion = var_program.scope_actual
     #nombre = p[-6]
     nombre = p[-3]
+    # print("pasa por aqui")
     # print("pila operandos: ", var_program.pila_operando)
     # print("funcion: ", funcion)
     # print("nombre: ", nombre)
-    #variable_borrada = var_program.pila_operando.pop()
+    var_program.pila_operando.pop()
     #print("pila operandos: ", var_program.pila_operando)
     variable = var_program.directorio_func.get_funcion_variable(funcion, nombre)
     # print("variable: ", variable)
@@ -558,15 +563,19 @@ def p_punto_checkIfArreglo(p):
         else:
             print("La variable: " + str(nombre) + " no es un arreglo")
             sys.exit()
-    print("variables: ", var_program.pila_variables_dimensionadas)
+    #print("variables: ", var_program.pila_variables_dimensionadas)
 
 #Validar si el indice del arreglo, sea de una dimension correcta
 def p_punto_checkIndexArreglo(p):
     '''punto_checkIndexArreglo : '''
     indice_arreglo_direccion = var_program.pila_operando.pop() #regresa la direccion del indice
+    # print("indice_arreglo_direccion: ", indice_arreglo_direccion)
     indice_arreglo_tipo = var_program.pila_tipo.pop()
+    # print("indice_arreglo_tipo: ", indice_arreglo_tipo)
     nombre_variable = p[-6]
+    # print("nombre variable: ", nombre_variable)
     variable_arreglo = var_program.pila_variables_dimensionadas.pop()
+    # print("variable arreglo: ", variable_arreglo)
     
     #Checar que el index sea int
     if indice_arreglo_tipo != 'int':
@@ -578,7 +587,9 @@ def p_punto_checkIndexArreglo(p):
         var_program.numero_cuadruplo += 1
         
         temp_direccion_base = var_program.memoria.pedir_direccion_global('int', variable_arreglo['direccion_memoria'])
+        # print("direccion temporal base: ", temp_direccion_base)
         indice_temp_resultado = var_program.memoria.pedir_direccion_global('int')
+        # print("direccion resultado base: ", indice_temp_resultado)
         
         cuadrup = Cuadruplos(var_program.numero_cuadruplo, '+', temp_direccion_base, indice_arreglo_direccion, indice_temp_resultado)
         var_program.lista_cuadruplo.append(cuadrup)
@@ -618,7 +629,7 @@ def p_void_check(p):
 
 	if funcion_objeto["tipo_retorno"] != 'void':
 		print("Esta funcion no se puede usar como procedimiento")
-		#sys.exit()
+		sys.exit()
     
 ##########################  P.N. PARA GENERACION DE CUADRUPLOS ###############################
 
@@ -900,6 +911,7 @@ def p_punto_regreserWhile(p):
 def p_punto_print(p):
 	''' punto_print : '''
 	#sacar direccion de memoria de lo que se va a imprimir de la pila de operandos
+	print("pila de operandos: ", var_program.pila_operando)
 	operando = var_program.pila_operando.pop()
 	#crear cadruplo PRINT
 	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'PRINT', operando, None, None)
@@ -1241,7 +1253,7 @@ def p_punto_cuadScattPend(p):
 parser = yacc.yacc()
 
 # nombre del archivo a compilar
-name = 'archivo2.txt'
+name = 'archivo6.txt'
 
 with open(name, 'r') as myfile:
 	s = myfile.read().replace('\n', '')
@@ -1254,8 +1266,9 @@ except:
      sys.exit()
 
 # Imprimir programa
-var_program.directorio_func.print_directorio()
+# var_program.directorio_func.print_directorio()
 var_program.print_cuadruplos()
+
 
 ############################### EJECUCION DE MAQUINA VIRTUAL ##############################################
 
@@ -1266,6 +1279,47 @@ try:
 except:
     print("No compilo en la maquina virtual")
     sys.exit()
+
+# Impresion de memoria
+print("\nMemoria Global int segmentos: ")
+var_program.memoria.memoria_global.int_segmento.print_memoria()
+print("Memoria Global float segmentos: ")
+var_program.memoria.memoria_global.float_segmento.print_memoria()
+print("Memoria Global bool segmentos: ")
+var_program.memoria.memoria_global.bool_segmento.print_memoria()
+print("Memoria Global string segmentos: ")
+var_program.memoria.memoria_global.string_segmento.print_memoria()
+# print("\n")
+
+print("\nMemoria Local int segmentos: ")
+var_program.memoria.memoria_local.int_segmento.print_memoria()
+print("Memoria Local float segmentos: ")
+var_program.memoria.memoria_local.float_segmento.print_memoria()
+print("Memoria Local bool segmentos: ")
+var_program.memoria.memoria_local.bool_segmento.print_memoria()
+print("Memoria Local string segmentos: ")
+var_program.memoria.memoria_local.string_segmento.print_memoria()
+# print("\n")
+
+print("\nMemoria Temporal int segmentos: ")
+var_program.memoria.memoria_temporal.int_segmento.print_memoria()
+print("Memoria Temporal float segmentos: ")
+var_program.memoria.memoria_temporal.float_segmento.print_memoria()
+print("Memoria Temporal bool segmentos: ")
+var_program.memoria.memoria_temporal.bool_segmento.print_memoria()
+print("Memoria Temporal string segmentos: ")
+var_program.memoria.memoria_temporal.string_segmento.print_memoria()
+# print("\n")
+
+print("\nMemoria Constantes int segmentos: ")
+var_program.memoria.memoria_constantes.int_segmento.print_memoria()
+print("Memoria Constantes float segmentos: ")
+var_program.memoria.memoria_constantes.float_segmento.print_memoria()
+print("Memoria Constantes bool segmentos: ")
+var_program.memoria.memoria_constantes.bool_segmento.print_memoria()
+print("Memoria Constantes string segmentos: ")
+var_program.memoria.memoria_constantes.string_segmento.print_memoria()
+print("\n")
 
 # Imprimir los parametros de las funciones (comentar el borrado de la lista de parametros para que despliegue algo)
 # var_program.print_temporales_parametros_nombres()

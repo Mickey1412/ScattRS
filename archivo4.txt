@@ -1,21 +1,22 @@
 programa hola 
 
+funcion int recursividad(int p1){
+    SI(p1 > 10){
+        retornar p1;
+    }
+    p1 = p1 + recursividad(p1 + 1);
+}
+
 inicio(){
-    var int iA, iB;
-    var int iC[3];
-    var float fC, fD, fE;
-
-
-    iA = 3 + 4 * 5;
-    iB = iA - 3;
-
-    iC[0] = iA;
-    iC[1] = iB;
-    iC[2] = iC[0] - iC[1];
-    imprimir(iC[0]);
-    imprimir(iC[1]);
-    imprimir(iC[2]);
-    
-    
-    
+    var int iA, iB, iC, iResultado;
+    var int arrA[3];
+    iB = 0;
+    iC = 1;
+    imprimir("valor 0 del arreglo ");
+    arrA[0] = 2;
+    imprimir(arrA[0]);
+    iA = 5;
+    iResultado = recursividad(iA);
+    imprimir("iResultado");
+    imprimir(iResultado);
 }

@@ -126,8 +126,3 @@ class Segmentos():
         else:
             print("Direccion invalida")
             sys.exit()
-
-    
-
-
-    

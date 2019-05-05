@@ -90,5 +90,7 @@ class TipoSegmentoMem():
         else:
             print("No hay espacio de memoria disponible")
 
+    def print_memoria(self):
+        print(self.segmento)
 
 

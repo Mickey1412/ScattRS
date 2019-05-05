@@ -118,21 +118,28 @@ class Maquina_Virtual():
             #Cuando operandos izquierdos son una casilla de arreglo
             if isinstance(dir_operando_izq, dict):
                 dir_operando_izq = memoria_actual.get_valor(dir_operando_izq['direccion_indice'])
+                print("dir_operando_izq: ", dir_operando_izq)
             #Cuando operandos derechos son una casilla de arreglo
             elif isinstance(dir_operando_der, dict):
                 dir_operando_der = memoria_actual.get_valor(dir_operando_der['direccion_indice'])
+                print("dir_operando_der: ", dir_operando_der)
             #Cuando operandos de resultado son una casilla de arreglo
             elif isinstance(dir_resultado, dict):
                 dir_resultado = memoria_actual.get_valor(dir_resultado['direccion_indice'])
+                # print("dir_resultado: ", dir_resultado)
 
             #Lista de condiciones para la ejeecucin de cada  instruccion de acuerdo a sutipo de accion en el cuadruplos 
 
             ##################################### Ejecucion de cuadruplos basicos #######################################
             if accion == '+':
                 operando_izq = memoria_actual.get_valor(dir_operando_izq)
+                print("operando_izq", operando_izq)
                 operando_der = memoria_actual.get_valor(dir_operando_der)
+                print("operando_der", operando_der)
                 #Se realiza la operacion de la suma con los valores de los operandos
                 resultado = operando_izq + operando_der
+                print("resultado", resultado)
+                print("dir_resultado: ", dir_resultado)
                 #Se guarda el resultado y se continua al siguiente cuadruplo
                 memoria_actual.editar_valor(dir_resultado, resultado)
                 self.num_instrucciones_actual += 1
@@ -203,8 +210,12 @@ class Maquina_Virtual():
                 self.num_instrucciones_actual += 1
             elif accion == '=':
                 operando_izq = memoria_actual.get_valor(dir_operando_izq)
+                print("\nAsignacion")
+                print("operand_izq: ", operando_izq)
                 #Le asignas el valor del operando izquierdo al resultado
                 resultado = operando_izq
+                print("resultado: ", resultado)
+                print("direccion resultado: ", dir_resultado)
                 #Se guarda el resultado y se continua al siguiente cuadruplo
                 memoria_actual.editar_valor(dir_resultado, resultado)
                 self.num_instrucciones_actual += 1
@@ -305,16 +316,36 @@ class Maquina_Virtual():
             elif accion == 'PARAM':
                 #Se obtiene el valor de los parametros y la direccion de memoria deonde se van a guardar
                 operando_izq = memoria_actual.get_valor(dir_operando_izq)
-                dir_parametro = funcion_llamada['funcion']['parametros']['direcciones'][parametro_posicion]
+                # print("operando_izq: ", operando_izq)
+                # print("parametros de la funcion: ",funcion_llamada['funcion']['parametros']['direccion'][parametro_posicion])
+                # print("parametro posicion: ",parametro_posicion)
+                # print("lista direcciones: ", funcion_llamada['funcion']['parametros']['direccion'] )
+                
+                # parametro_posicion = len(funcion_llamada['funcion']['parametros']['direccion']) - 1
+                # print("parametro posicion: ", parametro_posicion)
+                try:
+                    dir_parametro = funcion_llamada['funcion']['parametros']['direccion'][parametro_posicion]
+                except:
+                    print("no jala el dir parametro")
+                # print("dir_parametro", dir_parametro)
+                # try:
+                #     parametro_posicion = len(dir_parametro)
+                # except:
+                #     print("no jalo el parametro posicion")
+                # print("parametro posicion: ", parametro_posicion)
+                # print("dir_parametro: ", dir_parametro)
                 parametro_posicion += 1
                 #Se guardan los valores de los parametros en el segmento de memoria de la funcion que se llama
-                funcion_llamada['memoria'].editar_valor(parametro_posicion, operando_izq)
+                try:
+                    funcion_llamada['memoria'].editar_valor(dir_parametro, operando_izq)
+                except:
+                    print("no esta jalando la memoria")
                 #Pasa al cuadruplo siguiente
                 self.num_instrucciones_actual += 1
             elif accion == 'GOSUB':
                 #se guarda el numero de la instruccion a la que se va a regresar despues de la ejecucucion de la funcion llamada
                 pila_num_instruccion_rtr.append(self.num_instrucciones_actual)
-                #guarda los segmentos de memoria locales y temporales de la funcion que hico la llamada
+                #guarda los segmentos de memoria locales y temporales de la funcion que hizo la llamada
                 pila_seg_local.append(memoria_actual.memoria_local)
                 pila_seg_temp.append(memoria_actual.memoria_temporal)
                 #Cambiar el segmento de memoria actual por el de la funcion a la que se esta llamando
@@ -327,4 +358,23 @@ class Maquina_Virtual():
                 resultado = operando_izq
                 memoria_actual.editar_valor(dir_resultado, resultado)
                 self.num_instrucciones_actual += 1
+            ################################## Cuadruplos de Arreglos ##########################################
+            elif accion == 'VER_ARR':
+                #Toma el indice del arreglo que se llama y verifica que se encuentre dentro de los limites superiores e inferiores del arreglo
+                indice = memoria_actual.get_valor(dir_operando_izq)
+                print("indice: ", indice)
+                limite_inf = dir_operando_der
+                print("dir_operando_der: ", dir_operando_der)
+                limite_sup = dir_resultado
+                # try:
+                #     limite_sup = dir_resultado
+                # except:
+                #     print("no jala el limite_sup")
+                print("limite_sup: ", limite_sup , "\n")
+                
+                if indice < limite_sup and indice >= limite_inf:
+                    self.num_instrucciones_actual += 1
+                else:
+                    print("El indice esta fuera de los limites del arreglo")
+                    sys.exit()
 

@@ -75,5 +75,3 @@ class Memoria():
     def reset_temporal(self):
         self.memoria_local.borron_y_cuenta_nueva()
         self.memoria_temporal.borron_y_cuenta_nueva()
-
-    

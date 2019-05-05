@@ -1,0 +1,11 @@
+programa hola 
+
+inicio(){
+    var int iA[3];
+
+    iA[2] = 3;
+
+    imprimir("iA en 0");
+    imprimir(iA[2]);
+    
+}
