@@ -339,14 +339,14 @@ def p_bloque_A1(p):
 		| stmt bloque_A1 
 		| empty
 	'''
-
+# DESVIA estadistica_A1 punto_cuadDesv
 def p_estadistica(p):
 	'''
 	estadistica : PROM estadistica_A1 punto_cuadProm
 		| MODA estadistica_A1 punto_cuadModa
 		| MEDIAN estadistica_A1 punto_cuadMedian
 		| SUM estadistica_A1 punto_cuadSum
-		| DESVIA estadistica_A2 punto_cuadDesv
+		| DESVIA estadistica_A1 punto_cuadDesv
 		| PEND estadistica_A2 punto_cuadPend
 		| VARIANCE estadistica_A1 punto_cuadVarian
 		| R_SQUARE estadistica_A2 punto_cuadRsquar
@@ -366,11 +366,13 @@ def p_estadistica_A1(p):
 	'''
 	estadistica_A1 : PAREN_I ID punto_pilaOvar PAREN_D 
 	'''
-	# print(p[1],p[2],p[3],p[4])
+	# print("pasa por estadistica 1")	
+	p[0] = p[2]
+ # print(p[1],p[2],p[3],p[4])
 
 def p_estadistica_A2(p):
 	'''
-	estadistica_A2 : PAREN_I ID punto_pilaOvar COMA ID punto_pilaOvar PAREN_D 
+	estadistica_A2 : PAREN_I ID punto_pilaOvar COMA ID punto_pilaOvar PAREN_D punto_specname2
 	'''
 	#print("pasa por estadisticaA2")
 
@@ -407,6 +409,16 @@ def p_while(p):
 def p_empty(p):
 	'empty :'
 	pass
+
+def p_punto_specname2(p):
+	'''punto_specname2 : '''
+	nombre_var1 = p[-6]
+	nombre_var2 = p[-3]
+	scope = var_program.scope_actual
+	# nombre_variable = p[-1]
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'SPECNAME', scope, nombre_var1, nombre_var2)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
 
 ## PUNTOS NEURALGICOS ##
 # P.N. que agrega funcion principal (el programa)
@@ -507,7 +519,7 @@ def p_punto_addv(p):
 def p_punto_identificarDim(p):
 	'''punto_identificarDim : '''
 	nombre_variable_arr = p[-5]
-	print("nombre variable arreglo: ", nombre_variable_arr)
+	# print("nombre variable arreglo: ", nombre_variable_arr)
 	direccion_variable_arr = var_program.pila_operando.pop()
 	#print(direccion_variable_arr)
 	dimension_size = var_program.memoria.get_valor(direccion_variable_arr)
@@ -701,10 +713,11 @@ def p_punto_logico(p):
 #P.N. que inserta una variable a la pila de operandos
 def p_punto_pilaOvar(p):
 	'''punto_pilaOvar : '''
+	# print("==========================================")
 	# print("Scope: ", var_program.scope_actual)
 	# print("Variable: ", p[-1])
 	variable = var_program.directorio_func.get_funcion_variable(var_program.scope_actual, p[-1])
-	#print("variable: ", variable)
+	# print("variable: ", variable)
 
 	if variable is None:
 		#Verifica si la varaible existe en el scope global
@@ -808,8 +821,11 @@ def p_punto_cuadRead(p):
 def p_punto_cuadAssign(p):
 	'''punto_cuadAssign : '''
 	#obtener operador
+	# print("pila de operador: ",var_program.pila_operador)
 	operador = var_program.pila_operador.pop()
-
+	
+	# print("pila de operandos: ",var_program.pila_operando)
+	# print("asignacion")
 	if operador == '=':
 		#obtener operando con su tipo
 		# print("lista 1 : ", var_program.pila_operando)
@@ -823,7 +839,7 @@ def p_punto_cuadAssign(p):
 
 		#obtener el tipo del resultado de los operandos
 		tipo_resultado = var_program.cubo_semantico.get_tipo_semantica(tipo_izq, tipo_der, operador)
-		# print("tipo_resultado: ", tipo_resultado)
+		print("tipo_resultado: ", tipo_resultado)
 		#Si no es type_mismatch
 		if tipo_resultado != 'error':
 			#crear cuadruplo
@@ -911,7 +927,7 @@ def p_punto_regreserWhile(p):
 def p_punto_print(p):
 	''' punto_print : '''
 	#sacar direccion de memoria de lo que se va a imprimir de la pila de operandos
-	print("pila de operandos: ", var_program.pila_operando)
+	# print("pila de operandos: ", var_program.pila_operando)
 	operando = var_program.pila_operando.pop()
 	#crear cadruplo PRINT
 	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'PRINT', operando, None, None)
@@ -1062,12 +1078,18 @@ def p_punto_funcCallR(p):
 #P.N. para el cuadruplo de la funcion: PROM
 def p_punto_cuadProm(p):
 	'''punto_cuadProm : '''
+	scope = var_program.scope_actual
+	nombre_variable = p[-1]
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'SPECNAME', scope, nombre_variable, None)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
 	#Se hace pop para sacar el arreglo de la pila de operandos
 	id_variable = p[-7]
 	#print("tipo_var: ", id_variable)
 	variable = var_program.directorio_func.get_funcion_variable(var_program.scope_actual, id_variable)
 	#print("variable", variable)
 	tipo_var = variable['tipo']
+	# var_program.cubo_semantico.get_tipo_semantica()
 	#print("tipo de variable: ", tipo_var)
 	temporal = var_program.memoria.pedir_direccion_temporal(tipo_var)
 	#print("temporal: ", temporal)
@@ -1082,6 +1104,11 @@ def p_punto_cuadProm(p):
 #P.N. para el cuadruplo de la funcion: MODA
 def p_punto_cuadModa(p):
 	'''punto_cuadModa : '''
+	scope = var_program.scope_actual
+	nombre_variable = p[-1]
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'SPECNAME', scope, nombre_variable, None)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
 	#Se hace pop para sacar el arreglo de la pila de operandos
 	id_variable = p[-7]
 	#print("tipo_var: ", id_variable)
@@ -1101,6 +1128,12 @@ def p_punto_cuadModa(p):
 #P.N. para el cuadruplo de la funcion: MEDIANA
 def p_punto_cuadMedian(p):
 	'''punto_cuadMedian : '''
+	scope = var_program.scope_actual
+	nombre_variable = p[-1]
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'SPECNAME', scope, nombre_variable, None)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
+	# print("entro para hacer el cuadruplo de la mediana")
 	#Se hace pop para sacar el arreglo de la pila de operandos
 	id_variable = p[-7]
 	variable = var_program.directorio_func.get_funcion_variable(var_program.scope_actual, id_variable)
@@ -1116,6 +1149,11 @@ def p_punto_cuadMedian(p):
 #P.N. para el cuadruplo de la funcion: SUMATORIA
 def p_punto_cuadSum(p):
 	'''punto_cuadSum : '''
+	scope = var_program.scope_actual
+	nombre_variable = p[-1]
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'SPECNAME', scope, nombre_variable, None)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
 	#Se hace pop para sacar el arreglo de la pila de operandos
 	id_variable = p[-7]
 	#print("tipo_var: ", id_variable)
@@ -1126,7 +1164,7 @@ def p_punto_cuadSum(p):
 	temporal = var_program.memoria.pedir_direccion_temporal(tipo_var)
 	#print("temporal: ", temporal)
 	operand = var_program.pila_operando.pop()
-	operand = var_program.pila_operando.pop()
+	# operand = var_program.pila_operando.pop()
 	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'SUM', operand, None, temporal)
 	var_program.lista_cuadruplo.append(cuadrup)
 	var_program.numero_cuadruplo += 1
@@ -1136,6 +1174,11 @@ def p_punto_cuadSum(p):
 #P.N. para el cuadruplo de la funcion: DESVIACION ESTANDAR
 def p_punto_cuadDesv(p):
 	'''punto_cuadDesv : '''
+	scope = var_program.scope_actual
+	nombre_variable = p[-1]
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'SPECNAME', scope, nombre_variable, None)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
 	#Se hace pop para sacar los arreglos de la pila de operandos
 	id_variable = p[-7]
 	#print("tipo_var: ", id_variable)
@@ -1146,8 +1189,8 @@ def p_punto_cuadDesv(p):
 	temporal = var_program.memoria.pedir_direccion_temporal(tipo_var)
 	#print("temporal: ", temporal)
 	operand1 = var_program.pila_operando.pop()
-	operand2 = var_program.pila_operando.pop()
-	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'DESV', operand2, operand1, temporal)
+	# operand2 = var_program.pila_operando.pop()
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'DESV', operand1, None, temporal)
 	var_program.lista_cuadruplo.append(cuadrup)
 	var_program.numero_cuadruplo += 1
 	var_program.pila_operando.append(temporal)
@@ -1166,6 +1209,12 @@ def p_punto_cuadPend(p):
 
 def p_punto_cuadVarian(p):
 	'''punto_cuadVarian : '''
+	scope = var_program.scope_actual
+	nombre_variable = p[-1]
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'SPECNAME', scope, nombre_variable, None)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
+ 
 	id_variable = p[-7]
 	variable = var_program.directorio_func.get_funcion_variable(var_program.scope_actual, id_variable)
 	tipo_var = variable['tipo']
@@ -1253,7 +1302,8 @@ def p_punto_cuadScattPend(p):
 parser = yacc.yacc()
 
 # nombre del archivo a compilar
-name = 'archivo6.txt'
+# name = 'archivo6.txt'
+name = 'archivo7.scat'
 
 with open(name, 'r') as myfile:
 	s = myfile.read().replace('\n', '')
@@ -1262,12 +1312,64 @@ print("Nombre del archivo de prueba: " + name + "\n")
 try:
 	parser.parse(s)
 except:
-     print("No compilo en el parser")
+     print("\nNo compilo en el parser")
      sys.exit()
 
 # Imprimir programa
-# var_program.directorio_func.print_directorio()
+print("================================")
+var_program.directorio_func.print_directorio()
+print("================================")
 var_program.print_cuadruplos()
+
+# Impresion de memoria
+
+print("\nDesea imprimir memoria?")
+print_memoria = input()
+
+if(print_memoria == 'y'):
+	print("================================")
+	print("\nMemoria Global int segmentos: ")
+	var_program.memoria.memoria_global.int_segmento.print_memoria()
+	print("Memoria Global float segmentos: ")
+	var_program.memoria.memoria_global.float_segmento.print_memoria()
+	print("Memoria Global bool segmentos: ")
+	var_program.memoria.memoria_global.bool_segmento.print_memoria()
+	print("Memoria Global string segmentos: ")
+	var_program.memoria.memoria_global.string_segmento.print_memoria()
+	# print("\n")
+
+	print("================================")
+	print("\nMemoria Local int segmentos: ")
+	var_program.memoria.memoria_local.int_segmento.print_memoria()
+	print("Memoria Local float segmentos: ")
+	var_program.memoria.memoria_local.float_segmento.print_memoria()
+	print("Memoria Local bool segmentos: ")
+	var_program.memoria.memoria_local.bool_segmento.print_memoria()
+	print("Memoria Local string segmentos: ")
+	var_program.memoria.memoria_local.string_segmento.print_memoria()
+	# print("\n")
+
+	print("================================")
+	print("\nMemoria Temporal int segmentos: ")
+	var_program.memoria.memoria_temporal.int_segmento.print_memoria()
+	print("Memoria Temporal float segmentos: ")
+	var_program.memoria.memoria_temporal.float_segmento.print_memoria()
+	print("Memoria Temporal bool segmentos: ")
+	var_program.memoria.memoria_temporal.bool_segmento.print_memoria()
+	print("Memoria Temporal string segmentos: ")
+	var_program.memoria.memoria_temporal.string_segmento.print_memoria()
+	# print("\n")
+
+	print("================================")
+	print("\nMemoria Constantes int segmentos: ")
+	var_program.memoria.memoria_constantes.int_segmento.print_memoria()
+	print("Memoria Constantes float segmentos: ")
+	var_program.memoria.memoria_constantes.float_segmento.print_memoria()
+	print("Memoria Constantes bool segmentos: ")
+	var_program.memoria.memoria_constantes.bool_segmento.print_memoria()
+	print("Memoria Constantes string segmentos: ")
+	var_program.memoria.memoria_constantes.string_segmento.print_memoria()
+	print("\n")
 
 
 ############################### EJECUCION DE MAQUINA VIRTUAL ##############################################
@@ -1277,49 +1379,59 @@ ejecutar_maquinaVirtual = Maquina_Virtual(var_program.memoria, var_program.direc
 try:
     ejecutar_maquinaVirtual.ejecutar_maquina()
 except:
-    print("No compilo en la maquina virtual")
+    print("\nNo compilo en la maquina virtual :c")
     sys.exit()
 
+print("\nDesea imprimir memoria?")
+print_memoria = input()
+
 # Impresion de memoria
-print("\nMemoria Global int segmentos: ")
-var_program.memoria.memoria_global.int_segmento.print_memoria()
-print("Memoria Global float segmentos: ")
-var_program.memoria.memoria_global.float_segmento.print_memoria()
-print("Memoria Global bool segmentos: ")
-var_program.memoria.memoria_global.bool_segmento.print_memoria()
-print("Memoria Global string segmentos: ")
-var_program.memoria.memoria_global.string_segmento.print_memoria()
-# print("\n")
+if(print_memoria == 'y'):
+	print("================================")
+	print("\nMemoria Global int segmentos: ")
+	var_program.memoria.memoria_global.int_segmento.print_memoria()
+	print("Memoria Global float segmentos: ")
+	var_program.memoria.memoria_global.float_segmento.print_memoria()
+	print("Memoria Global bool segmentos: ")
+	var_program.memoria.memoria_global.bool_segmento.print_memoria()
+	print("Memoria Global string segmentos: ")
+	var_program.memoria.memoria_global.string_segmento.print_memoria()
+	# print("\n")
 
-print("\nMemoria Local int segmentos: ")
-var_program.memoria.memoria_local.int_segmento.print_memoria()
-print("Memoria Local float segmentos: ")
-var_program.memoria.memoria_local.float_segmento.print_memoria()
-print("Memoria Local bool segmentos: ")
-var_program.memoria.memoria_local.bool_segmento.print_memoria()
-print("Memoria Local string segmentos: ")
-var_program.memoria.memoria_local.string_segmento.print_memoria()
-# print("\n")
+	print("================================")
+	print("\nMemoria Local int segmentos: ")
+	var_program.memoria.memoria_local.int_segmento.print_memoria()
+	print("Memoria Local float segmentos: ")
+	var_program.memoria.memoria_local.float_segmento.print_memoria()
+	print("Memoria Local bool segmentos: ")
+	var_program.memoria.memoria_local.bool_segmento.print_memoria()
+	print("Memoria Local string segmentos: ")
+	var_program.memoria.memoria_local.string_segmento.print_memoria()
+	# print("\n")
 
-print("\nMemoria Temporal int segmentos: ")
-var_program.memoria.memoria_temporal.int_segmento.print_memoria()
-print("Memoria Temporal float segmentos: ")
-var_program.memoria.memoria_temporal.float_segmento.print_memoria()
-print("Memoria Temporal bool segmentos: ")
-var_program.memoria.memoria_temporal.bool_segmento.print_memoria()
-print("Memoria Temporal string segmentos: ")
-var_program.memoria.memoria_temporal.string_segmento.print_memoria()
-# print("\n")
+	print("================================")
+	print("\nMemoria Temporal int segmentos: ")
+	var_program.memoria.memoria_temporal.int_segmento.print_memoria()
+	print("Memoria Temporal float segmentos: ")
+	var_program.memoria.memoria_temporal.float_segmento.print_memoria()
+	print("Memoria Temporal bool segmentos: ")
+	var_program.memoria.memoria_temporal.bool_segmento.print_memoria()
+	print("Memoria Temporal string segmentos: ")
+	var_program.memoria.memoria_temporal.string_segmento.print_memoria()
+	# print("\n")
 
-print("\nMemoria Constantes int segmentos: ")
-var_program.memoria.memoria_constantes.int_segmento.print_memoria()
-print("Memoria Constantes float segmentos: ")
-var_program.memoria.memoria_constantes.float_segmento.print_memoria()
-print("Memoria Constantes bool segmentos: ")
-var_program.memoria.memoria_constantes.bool_segmento.print_memoria()
-print("Memoria Constantes string segmentos: ")
-var_program.memoria.memoria_constantes.string_segmento.print_memoria()
-print("\n")
+	print("================================")
+	print("\nMemoria Constantes int segmentos: ")
+	var_program.memoria.memoria_constantes.int_segmento.print_memoria()
+	print("Memoria Constantes float segmentos: ")
+	var_program.memoria.memoria_constantes.float_segmento.print_memoria()
+	print("Memoria Constantes bool segmentos: ")
+	var_program.memoria.memoria_constantes.bool_segmento.print_memoria()
+	print("Memoria Constantes string segmentos: ")
+	var_program.memoria.memoria_constantes.string_segmento.print_memoria()
+	print("\n")
+
+
 
 # Imprimir los parametros de las funciones (comentar el borrado de la lista de parametros para que despliegue algo)
 # var_program.print_temporales_parametros_nombres()

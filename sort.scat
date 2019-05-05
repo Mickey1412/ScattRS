@@ -1,0 +1,42 @@
+programa hola   
+
+inicio(){
+    var int iI, iJ, iTemp, iCont1, iCont2, iReadtemp, iReadtemp2;
+    var int iArr[20];
+
+    iTemp = 0;
+    iCont1 = 0;
+    iCont2 = 0;
+    iI = 0;
+    
+
+    imprimir("mete dato 1 al 20");
+    leer(iReadtemp2);
+
+    imprimir("mete n");
+    mientras(iCont1 < iReadtemp2){
+        leer(iReadtemp);
+        iArr[iCont1] = iReadtemp;
+        iCont1 = iCont1 + 1;
+    }
+
+    imprimir("Loading ordenando el arreglo");
+    mientras(iI < iReadtemp2 - 1){
+        iJ = 0;
+        mientras(iJ < iReadtemp2 - iI - 1){
+            SI(iArr[iJ] > iArr[iJ + 1]){
+                iTemp = iArr[iJ];
+                iArr[iJ] = iArr[iJ + 1];
+                iArr[iJ + 1] = iTemp;
+            }
+            iJ = iJ + 1;
+        }
+        iI = iI + 1;
+    }
+
+    imprimir("imprimiendo resultados");
+    mientras(iCont2 < iReadtemp2){
+        imprimir(iArr[iCont2]);
+        iCont2 = iCont2 + 1;
+    }
+}
