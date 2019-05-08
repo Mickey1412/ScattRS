@@ -673,7 +673,10 @@ class Maquina_Virtual():
             elif accion == 'BERNOU':
                 valor_n = memoria_actual.get_valor(dir_operando_der)
                 probabilidad = memoria_actual.get_valor(dir_operando_izq)
-                datos = bernoulli.rvs(probabilidad, size=10)
+                #datos = bernoulli.rvs(probabilidad, size=10)
+                datos = bernoulli.cdf(valor_n, probabilidad)
+                # datos = bernoulli.pmf(valor_n, probabilidad)
+                # print("datos: ", datos)
                 memoria_actual.editar_valor(dir_resultado, datos)
                 self.num_instrucciones_actual += 1
             elif accion == 'PEND':

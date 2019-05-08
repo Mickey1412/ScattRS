@@ -1,22 +1,28 @@
 programa estadistica    
 inicio(){
     var int sumatoria;
-    var float prom, mod, desvia, varia, rcuad, median;
-    var int iArr[5];
+    var float prom,  prom1, mod, desvia, varia, rcuad, median;
+    var float iArr[5];
     var int iBrr[5];
+
+    prom = 0.3;
+    prom1 = 0.3;
+    
     iArr[0] = 1;
     iArr[1] = 2;
     iArr[2] = 7;
     iArr[3] = 5;
     iArr[4] = 8;
 
+    prom = bernoulli(prom1,prom);
+
+    imprimir("promedio prueba");
+    imprimir(prom1);
+
     iBrr[0] = 7;
     iBrr[1] = 2;
     iBrr[2] = 3;
     iBrr[3] = 2;
     iBrr[4] = 8;
-
-
-    graf_scatter(iArr, iBrr);
 
 }
