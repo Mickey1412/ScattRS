@@ -4,7 +4,7 @@
 
 import json
 import sys
-#Clase re representa los segmentos de memoria que dividen la memoria pricipal
+#Clase de representa los segmentos de memoria que dividen la memoria pricipal
 class TipoSegmentoMem():
     #Clase constructora
     def __init__(self, nombre_segmento, direccion_inicio, direccion_final):

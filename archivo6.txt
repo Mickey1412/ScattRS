@@ -2,10 +2,17 @@ programa hola
 
 inicio(){
     var int iA[3];
+    var int iConst;
+
 
     iA[2] = 3;
+    iA[0] = 2;
 
-    imprimir("iA en 0");
-    imprimir(iA[2]);
+    imprimir("hola");
+    iA[1] = iA[2] * iA[2];
+    imprimir("valor de iConst");
+    imprimir(iConst);
+    imprimir("valor de iA 1");
+    imprimir(iA[1]);
     
 }
