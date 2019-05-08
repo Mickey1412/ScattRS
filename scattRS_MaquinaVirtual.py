@@ -4,7 +4,14 @@
 
 import sys
 import statistics
+from scipy import stats
 from sklearn.metrics import r2_score
+from scipy.stats import binom
+from scipy.stats import bernoulli
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt; plt.rcdefaults()
+
 # import array
 from ast import literal_eval
 from scattRS_Memoria import Memoria
@@ -565,3 +572,145 @@ class Maquina_Virtual():
                 resultado = r2_score(arreglo1, arreglo2)
                 memoria_actual.editar_valor(dir_resultado, resultado)
                 self.num_instrucciones_actual += 1
+            elif accion == 'SCATT':
+                variable_objeto1 = self.directorio_func.get_funcion_variable(scope, nombre_variable1)
+                variable_lim_sup1 = variable_objeto1['limite_sup']
+                # print("variable objeto 1: ", variable_objeto1)
+                variable_objeto2 = self.directorio_func.get_funcion_variable(scope, nombre_variable2)
+                variable_lim_sup2 = variable_objeto2['limite_sup']
+                # print("variable objeto 2: ", variable_objeto2)
+                arreglo1 = []
+                arreglo2 = []
+                
+                for i in range(variable_lim_sup1):
+                    direccion = dir_operando_izq + i
+                    try:
+                        arreglo1.append(memoria_actual.get_valor(direccion))
+                    except:
+                        print("pasa i = ", i)
+                # print(arreglo1)
+                
+                for i in range(variable_lim_sup2):
+                    direccion = dir_operando_der + i
+                    try:
+                        arreglo2.append(memoria_actual.get_valor(direccion))
+                    except:
+                        print("pasa i = ", i)
+                # print(arreglo2)
+                print("Por favor inserte el limite de los ejes de la grafica")
+                index = input()
+                indice = int(index)
+                print("Desea imprimir la pendiente en la grafica? [y/n]")
+                res_pend = input()
+                if res_pend == 'y':
+                    print("inserta el valor del gradiente 'm' de la formula y = mx + b")
+                    valor_m = input()
+                    int_valor_m = int(valor_m)
+                    print("inserta el valor del intercept 'b' de la formula y = mx + b")
+                    valor_b = input()
+                    int_valor_b = int(valor_b)
+                    valor_x = np.linspace(-5, indice, 100)
+                    valor_y = int_valor_m * valor_x + int_valor_b
+                    plt.plot(valor_x, valor_y, '-r', label = 'pendiente')
+                    plt.legend(loc='upper left')
+                plt.plot(arreglo1, arreglo2, 'ro')
+                plt.axis([0, indice, 0, indice])
+                plt.grid()
+                plt.show()
+                self.num_instrucciones_actual += 1
+            elif accion == 'BAR':
+                variable_objeto1 = self.directorio_func.get_funcion_variable(scope, nombre_variable1)
+                variable_lim_sup1 = variable_objeto1['limite_sup']
+                # print("variable objeto 1: ", variable_objeto1)
+                variable_objeto2 = self.directorio_func.get_funcion_variable(scope, nombre_variable2)
+                variable_lim_sup2 = variable_objeto2['limite_sup']
+                # print("variable objeto 2: ", variable_objeto2)
+                arreglo1 = []
+                arreglo2 = []
+                
+                for i in range(variable_lim_sup1):
+                    direccion = dir_operando_izq + i
+                    try:
+                        arreglo1.append(memoria_actual.get_valor(direccion))
+                    except:
+                        print("pasa i = ", i)
+                # print(arreglo1)
+                
+                for i in range(variable_lim_sup2):
+                    direccion = dir_operando_der + i
+                    try:
+                        arreglo2.append(memoria_actual.get_valor(direccion))
+                    except:
+                        print("pasa i = ", i)
+                # print(arreglo2)
+                y_pos = np.arange(len(arreglo2))
+                print("Desea que la grafica de barras sea horizontal? [y/n]")
+                horizon = input()
+                if horizon == 'y':
+                    plt.barh(y_pos, arreglo1, align='center', alpha=0.5)
+                    plt.xticks(y_pos, arreglo2)
+                    plt.show()
+                    self.num_instrucciones_actual += 1
+                else:
+                    plt.bar(y_pos, arreglo1, align='center', alpha=0.5)
+                    plt.xticks(y_pos, arreglo2)
+                    plt.show()
+                    self.num_instrucciones_actual += 1
+            elif accion == 'BINOM':
+                valor_n = memoria_actual.get_valor(dir_operando_der)
+                probabilidad = memoria_actual.get_valor(dir_operando_izq)
+                x = stats.binom(valor_n, probabilidad)
+                print("generacio de 10 numeros")
+                try:
+                    valor_pmf = x.pmf(3)
+                except:
+                    print("no jalo el binomial")
+                binomial = binom.rvs(valor_n, probabilidad, size=10)
+                print("10 samples al azar de la distribucion binomial")
+                print(binomial)
+                memoria_actual.editar_valor(dir_resultado, valor_pmf)
+                self.num_instrucciones_actual += 1
+            elif accion == 'BERNOU':
+                valor_n = memoria_actual.get_valor(dir_operando_der)
+                probabilidad = memoria_actual.get_valor(dir_operando_izq)
+                datos = bernoulli.rvs(probabilidad, size=10)
+                memoria_actual.editar_valor(dir_resultado, datos)
+                self.num_instrucciones_actual += 1
+            elif accion == 'PEND':
+                variable_objeto1 = self.directorio_func.get_funcion_variable(scope, nombre_variable1)
+                variable_lim_sup1 = variable_objeto1['limite_sup']
+                # print("variable objeto 1: ", variable_objeto1)
+                variable_objeto2 = self.directorio_func.get_funcion_variable(scope, nombre_variable2)
+                variable_lim_sup2 = variable_objeto2['limite_sup']
+                # print("variable objeto 2: ", variable_objeto2)
+                arreglo1 = []
+                arreglo2 = []
+                
+                for i in range(variable_lim_sup1):
+                    direccion = dir_operando_izq + i
+                    try:
+                        arreglo1.append(memoria_actual.get_valor(direccion))
+                    except:
+                        print("pasa i = ", i)
+                # print(arreglo1)
+                
+                for i in range(variable_lim_sup2):
+                    direccion = dir_operando_der + i
+                    try:
+                        arreglo2.append(memoria_actual.get_valor(direccion))
+                    except:
+                        print("pasa i = ", i)
+                # print(arreglo2)
+                valor_m = (arreglo1[variable_lim_sup1 - 1] - arreglo1[0]) / (arreglo2[variable_lim_sup2 - 1] - arreglo2[0])
+                valor_b = arreglo1[0] - (valor_m * arreglo2[0])
+                string_m = str(valor_m)
+                string_b = str(valor_b)
+                print("Pendiente:")
+                print("y = " + string_m + "x + " + string_b)
+                #print("valor m:")
+                #print(valor_m)
+                #print("valor b:")
+                #print(valor_b)
+                self.num_instrucciones_actual += 1
+
+                

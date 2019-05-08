@@ -220,12 +220,12 @@ def p_var_cte_A1(p):
 #		| empty
 #	'''
 
-def p_var_cte_A2(p):
-	'''
-	var_cte_A2 : exp COMA var_cte_A2 
-		| exp 
-		| empty
-	'''
+#def p_var_cte_A2(p):
+#	'''
+#	var_cte_A2 : exp COMA var_cte_A2 
+#		| exp 
+#		| empty
+#	'''
 
 def p_proc_call(p):
 	'''
@@ -347,10 +347,9 @@ def p_estadistica(p):
 		| MEDIAN estadistica_A1 punto_cuadMedian
 		| SUM estadistica_A1 punto_cuadSum
 		| DESVIA estadistica_A1 punto_cuadDesv
-		| PEND estadistica_A2 punto_cuadPend
 		| VARIANCE estadistica_A1 punto_cuadVarian
 		| R_SQUARE estadistica_A2 punto_cuadRsquar
-		| BINOMIAL estadistica_A3 
+		| BINOMIAL estadistica_A2 punto_cuadBinomial
 		| BERNOULLI estadistica_A2 punto_cuadBernou
 	'''
 	# print("Si se pudo estadistica")
@@ -358,8 +357,9 @@ def p_estadistica(p):
 
 def p_estadisitica_graph(p):
     '''
-	estadistica_graph : GRAPH_BAR estadistica_A2 SEMICOLON
+	estadistica_graph : GRAPH_BAR estadistica_A2 punto_cuadBarra SEMICOLON
 		| GRAPH_SCATTER estadistica_A4 SEMICOLON
+		| PEND estadistica_A2 punto_cuadPend SEMICOLON
 	'''
 
 def p_estadistica_A1(p):
@@ -545,37 +545,38 @@ def p_punto_identificarDim(p):
 
 
 def p_punto_checkIfArreglo(p):
-    '''punto_checkIfArreglo : '''
-    #Validar si la variable, que se intenta acceder, es un arreglo
-    funcion = var_program.scope_actual
-    #nombre = p[-6]
-    nombre = p[-3]
-    # print("pasa por aqui")
-    # print("pila operandos: ", var_program.pila_operando)
-    # print("funcion: ", funcion)
-    # print("nombre: ", nombre)
-    var_program.pila_operando.pop()
-    #print("pila operandos: ", var_program.pila_operando)
-    variable = var_program.directorio_func.get_funcion_variable(funcion, nombre)
-    # print("variable: ", variable)
-    #print("variable borrada: ", variable_borrada)
-    
-    #Validar si la variable existe en el scope actual (funcion)
-    if variable is None:
-        #Checar si la variable existe en el scope global 
-        funcion = var_program.scope_global
-        variable = var_program.directorio_func.get_funcion_variable(funcion, nombre)
-        if variable is None:
-            print("No existe la variable: " + str(nombre))
-            sys.exit()
-    else:
-        if 'limite_sup' in variable:
-            #Guardar el arreglo, para crear cuadruplo mas adelante
-            var_program.pila_variables_dimensionadas.append(variable)
-        else:
-            print("La variable: " + str(nombre) + " no es un arreglo")
-            sys.exit()
-    #print("variables: ", var_program.pila_variables_dimensionadas)
+	'''punto_checkIfArreglo : '''
+	#Validar si la variable, que se intenta acceder, es un arreglo
+	funcion = var_program.scope_actual
+	#nombre = p[-6]
+	nombre = p[-3]
+	# print("pasa por aqui")
+	# print("pila operandos: ", var_program.pila_operando)
+	# print("funcion: ", funcion)
+	# print("nombre: ", nombre)
+	var_program.pila_operando.pop()
+	var_program.pila_tipo.pop()
+	#print("pila operandos: ", var_program.pila_operando)
+	variable = var_program.directorio_func.get_funcion_variable(funcion, nombre)
+	# print("variable: ", variable)
+	#print("variable borrada: ", variable_borrada)
+
+	#Validar si la variable existe en el scope actual (funcion)
+	if variable is None:
+		#Checar si la variable existe en el scope global 
+		funcion = var_program.scope_global
+		variable = var_program.directorio_func.get_funcion_variable(funcion, nombre)
+		if variable is None:
+			print("No existe la variable: " + str(nombre))
+			sys.exit()
+	else:
+		if 'limite_sup' in variable:
+			#Guardar el arreglo, para crear cuadruplo mas adelante
+			var_program.pila_variables_dimensionadas.append(variable)
+		else:
+			print("La variable no es un arreglo")
+			sys.exit()
+	#print("variables: ", var_program.pila_variables_dimensionadas)
 
 #Validar si el indice del arreglo, sea de una dimension correcta
 def p_punto_checkIndexArreglo(p):
@@ -652,7 +653,6 @@ def p_punto_pOper(p):
 	
 #FUNCION que resuelve operaciones de las pilas de operando y operadores, creando su cuadruplo
 def cuadOperaciones(p):
-	#resultado_cuad = 'temp'
 	#se sacan los operandos de las pilas para el cuadruplo
 	operando_der = var_program.pila_operando.pop()
 	tipo_der = var_program.pila_tipo.pop()
@@ -839,7 +839,6 @@ def p_punto_cuadAssign(p):
 
 		#obtener el tipo del resultado de los operandos
 		tipo_resultado = var_program.cubo_semantico.get_tipo_semantica(tipo_izq, tipo_der, operador)
-		print("tipo_resultado: ", tipo_resultado)
 		#Si no es type_mismatch
 		if tipo_resultado != 'error':
 			#crear cuadruplo
@@ -1266,6 +1265,26 @@ def p_punto_cuadBernou(p):
 	var_program.pila_operando.append(temporal)
 	var_program.pila_tipo.append(tipo_var)
 
+#P.N. para el cuadruplo de la funcion: BERNOULLI
+def p_punto_cuadBinomial(p):
+	'''punto_cuadBinomial : '''
+	#Se hace pop para sacar los arreglos de la pila de operandos
+	id_variable = p[-7]
+	#print("tipo_var: ", id_variable)
+	variable = var_program.directorio_func.get_funcion_variable(var_program.scope_actual, id_variable)
+	#print("variable", variable)
+	tipo_var = variable['tipo']
+	#print("tipo de variable: ", tipo_var)
+	temporal = var_program.memoria.pedir_direccion_temporal(tipo_var)
+	#print("temporal: ", temporal)
+	operand1 = var_program.pila_operando.pop()
+	operand2 = var_program.pila_operando.pop()
+	cuadrup = Cuadruplos(var_program.numero_cuadruplo, 'BINOM', operand1, operand2, temporal)
+	var_program.lista_cuadruplo.append(cuadrup)
+	var_program.numero_cuadruplo += 1
+	var_program.pila_operando.append(temporal)
+	var_program.pila_tipo.append(tipo_var)
+
 #P.N. para el cuadruplo de la funcion: GRAPH_BAR sin Pendiente
 def p_punto_cuadBarra(p):
 	'''punto_cuadBarra : '''
@@ -1303,7 +1322,7 @@ parser = yacc.yacc()
 
 # nombre del archivo a compilar
 # name = 'archivo6.txt'
-name = 'archivo7.scat'
+name = input('Por favor escriba el nombre del archivo con el codigo que desea compilar y ejecutar: \n')
 
 with open(name, 'r') as myfile:
 	s = myfile.read().replace('\n', '')
@@ -1315,15 +1334,22 @@ except:
      print("\nNo compilo en el parser")
      sys.exit()
 
-# Imprimir programa
-print("================================")
-var_program.directorio_func.print_directorio()
-print("================================")
-var_program.print_cuadruplos()
+print("\nDesea imprimir el directorio de funciones?")
+print_direct_func = input()
+if print_direct_func == 'y':
+	# Imprimir programa
+	print("================================")
+	var_program.directorio_func.print_directorio()
+	
+print("\nDesea imprimir los cuadruplo de ejecucion?")
+print_cuadrup = input()
+if print_cuadrup == 'y':
+	print("================================")
+	var_program.print_cuadruplos()
 
 # Impresion de memoria
 
-print("\nDesea imprimir memoria?")
+print("\nDesea imprimir memoria antes de ejecucion?")
 print_memoria = input()
 
 if(print_memoria == 'y'):
@@ -1382,7 +1408,7 @@ except:
     print("\nNo compilo en la maquina virtual :c")
     sys.exit()
 
-print("\nDesea imprimir memoria?")
+print("\nDesea imprimir memoria despues de ejecucion?")
 print_memoria = input()
 
 # Impresion de memoria

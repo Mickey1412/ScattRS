@@ -13,7 +13,7 @@ inicio(){
     iB = 0;
     iC = 1;
     imprimir("valor 0 del arreglo ");
-    arrA[0] = 2;
+    arrA[0];
     imprimir(arrA[0]);
     iA = 5;
     iResultado = recursividad(iA);

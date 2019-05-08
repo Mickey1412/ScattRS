@@ -2,32 +2,21 @@ programa estadistica
 inicio(){
     var int sumatoria;
     var float prom, mod, desvia, varia, rcuad, median;
-    var int iArr[6];
-    iArr[0] = 0;
-    iArr[1] = 4;
-    iArr[2] = 0;
+    var int iArr[5];
+    var int iBrr[5];
+    iArr[0] = 1;
+    iArr[1] = 2;
+    iArr[2] = 7;
+    iArr[3] = 5;
+    iArr[4] = 8;
 
-    iArr[5] = 1;
-    sumatoria = suma(iArr);
-    prom = media(iArr);
-    imprimir("sumatoria");
-    imprimir(sumatoria);
-    imprimir("promedio");
-    imprimir(prom);
-    median = mediana(iArr);
-    imprimir("la mediana es");
-    imprimir(median);
-    imprimir("moda");
-    mod = moda(iArr);
-    imprimir(mod);
-    imprimir("desviacion");
-    desvia = desv(iArr);
-    imprimir(desvia);
-    imprimir("varianza");
-    varia = varianza(iArr);
-    imprimir(varia);
-    imprimir("r cuadrada");
-    rcuad = r_cuad(iArr,iArr);
-    imprimir(rcuad);
+    iBrr[0] = 7;
+    iBrr[1] = 2;
+    iBrr[2] = 3;
+    iBrr[3] = 2;
+    iBrr[4] = 8;
+
+
+    graf_scatter(iArr, iBrr);
 
 }
